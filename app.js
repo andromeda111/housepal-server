@@ -6,8 +6,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 // Firebase Auth
-const firebase = require('firebase');
-const admin = require('firebase-admin');
+const firebaseAdmin = require('firebase-admin');
 // Express App
 const app = express();
 // Load Environment
@@ -36,16 +35,8 @@ app.use('/', index);
 app.use('/users', users);
 
 // Initialize Firebase
-
-const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-  databaseURL: process.env.FIREBASE_DATABASE_URL
-};
-firebase.initializeApp(firebaseConfig);
-
-admin.initializeApp({
-  credential: admin.credential.cert({
+firebaseAdmin.initializeApp({
+  credential: firebaseAdmin.credential.cert({
     "project_id": process.env.FIREBASE_PROJECT_ID,
     "private_key_id": process.env.FIREBASE_PRIVATE_KEY_ID,
     "private_key": process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
