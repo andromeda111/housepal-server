@@ -5,13 +5,18 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-
+// Firebase Auth
+const firebaseAdmin = require('firebase-admin');
+// Express App
 const app = express();
+// Load Environment
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
 
-// Route Requires
+// Routing
 const index = require('./routes/index');
 const users = require('./routes/users');
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -25,8 +30,21 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
 app.use('/', index);
 app.use('/users', users);
+
+// Initialize Firebase
+firebaseAdmin.initializeApp({
+  credential: firebaseAdmin.credential.cert({
+    "project_id": process.env.FIREBASE_PROJECT_ID,
+    "private_key_id": process.env.FIREBASE_PRIVATE_KEY_ID,
+    "private_key": process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+    "client_email": process.env.FIREBASE_CLIENT_EMAIL,
+    "client_id": process.env.FIREBASE_CLIENT_ID
+  }),
+  databaseURL: process.env.FIREBASE_DATABASE_URL,
+});
 
 // CORS Cross Domain
 app.enable('trust proxy')
