@@ -1,27 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const firebaseAdmin = require('firebase-admin');
+const checkAuthorization = require('../services/check-authorization.middleware')
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
     res.send('respond with a resource');
 });
 
-router.post('/verify', function(req, res, next) {
+router.post('/verify', checkAuthorization, function(req, res, next) {
+    let decodedToken = req.locals.decodedToken;
+    let uid = decodedToken.uid;
 
-    firebaseAdmin.auth().verifyIdToken(req.body.token)
-        .then(function(decodedToken) {
-            var uid = decodedToken.uid;
-            res.status(200).json({success: true, uid, msg: 'authorize, bruh!'})
-        })
-        .catch(function(error) {
-            console.log("Error verifying token:", error);
-            res.status(200).json({success: false, error})
-        });
+    res.status(200).json({success: true, uid, msg: 'authorize, bruh!'})
 });
-
-
-
-
 
 module.exports = router;
