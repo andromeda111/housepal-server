@@ -22,7 +22,7 @@ router.get('/', function(req, res, next) {
 //     })
 // });
 
-router.get('/signin', function(req, res, next) {
+router.post('/signin', function(req, res, next) {
     let email = req.body.email;
     let h_pw = req.body.password;
 
