@@ -8,19 +8,35 @@ router.get('/', function(req, res, next) {
     res.send('respond with a resource');
 });
 
-router.get('/current', checkAuthorization, function(req, res, next) {
-    let decodedToken = req.locals.decodedToken;
-    let uid = decodedToken.uid;
+// router.get('/current', checkAuthorization, function(req, res, next) {
+//     let decodedToken = req.locals.decodedToken;
+//     let uid = decodedToken.uid;
 
-    db('users').where({ uid })
-    .then(result => {
-        res.status(200).json(result);
-    })
-    .catch(err => {
-        console.error('ERROR: ', err);
-        //TODO: Add Error Handling
-    })
-});
+//     db('users').where({ uid })
+//     .then(result => {
+//         res.status(200).json(result);
+//     })
+//     .catch(err => {
+//         console.error('ERROR: ', err);
+//         //TODO: Add Error Handling
+//     })
+// });
+
+router.get('/signin', function(req, res, next) {
+    let email = req.body.email;
+    let h_pw = req.body.password;
+
+    db('users').where({ email, h_pw })
+        .then(user => {
+            res.status(200).json(user);
+        })
+        .catch(err => {
+            console.log('Error signing in user: ', err);
+            res.json(err);
+            //TODO: Add Error Handling
+        })
+
+})
 
 router.post('/signup', function(req, res, next) {
     let newUser = req.body;
