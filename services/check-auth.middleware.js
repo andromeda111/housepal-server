@@ -2,7 +2,8 @@ const firebaseAdmin = require('firebase-admin');
 
 function checkAuthorization(req, res, next) {
     let authToken = '';
-
+    console.log('req.headers: ', req.headers);
+    
     // Get the Auth Token from the Request Headers.
     if (req.headers && req.headers.authorization) {
         let tokenBearer = req.headers.authorization.split(' ');

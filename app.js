@@ -24,6 +24,8 @@ app.set('view engine', 'hbs');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.enable('trust proxy')
+app.use(allowCrossDomain);
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -47,8 +49,6 @@ firebaseAdmin.initializeApp({
 });
 
 // CORS Cross Domain
-app.enable('trust proxy')
-app.use(allowCrossDomain);
 function allowCrossDomain(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
