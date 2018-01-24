@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db')
-const checkAuthorization = require('../services/check-authorization.middleware')
+const checkAuthorization = require('../services/check-auth.middleware')
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {

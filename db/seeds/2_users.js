@@ -6,7 +6,6 @@ exports.seed = function(knex, Promise) {
             return knex('users').insert([
                 {
                     id: 1,
-                    uid: 'Ekj3cd0yM6TQcXfGekUbt5wjsWw2',
                     name: 'John',
                     email: 'john@housepal.com',
                     h_pw: 'asdfasdf',
@@ -15,7 +14,6 @@ exports.seed = function(knex, Promise) {
                 },
                 {
                     id: 2,
-                    uid: 'nZvPKdxv7DfU294eRRH7g2OwLUB3',
                     name: 'Ryan',
                     email: 'ryan@housepal.com',
                     h_pw: 'asdfasdf',
@@ -24,7 +22,6 @@ exports.seed = function(knex, Promise) {
                 },
                 {
                     id: 3,
-                    uid: 'ybPBlcFSngSAXO4DyOV7RMCAFwA2',
                     name: 'Cassa',
                     email: 'cassa@housepal.com',
                     h_pw: 'asdfasdf',
@@ -33,7 +30,6 @@ exports.seed = function(knex, Promise) {
                 },
                 {
                     id: 4,
-                    uid: 'FmByfURR7oeX7jtafMtGOriCw3A2',
                     name: 'Lindsey',
                     email: 'lindsey@housepal.com',
                     h_pw: 'asdfasdf',
@@ -42,7 +38,6 @@ exports.seed = function(knex, Promise) {
                 },
                 {
                     id: 5,
-                    uid: 'SZXZ7vzglFhBFtiS27MmlLXtmZl1',
                     name: 'David',
                     email: 'david@housepal.com',
                     h_pw: 'asdfasdf',
