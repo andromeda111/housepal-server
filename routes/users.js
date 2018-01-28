@@ -25,9 +25,9 @@ router.get('/', function(req, res, next) {
 
 router.post('/signin', function(req, res, next) {
     let email = req.body.email;
-    let h_pw = req.body.password;
+    let password = req.body.password;
 
-    db('users').where({ email, h_pw })
+    db('users').where({ email, password })
         .then(user => {
             res.status(200).json(user);
         })
@@ -40,15 +40,16 @@ router.post('/signin', function(req, res, next) {
 })
 
 router.post('/signup', async function(req, res, next) {
-    let userEmailPassword = req.body;
+    let userCredentials = req.body;
     let newUser = {
-        email: userEmailPassword.email,
-        h_pw: userEmailPassword.h_pw,
+        name: userCredentials.name,
+        email: userCredentials.email,
+        password: userCredentials.password,
         uid: ''
     }
     console.log(newUser);
 
-    await firebaseAdmin.auth().createUser(userEmailPassword)
+    await firebaseAdmin.auth().createUser(userCredentials)
         .then(firebaseUser => {
             newUser.uid = firebaseUser.uid;
             console.log('newUser.uid set: ', newUser);

@@ -8,7 +8,7 @@ exports.seed = function(knex, Promise) {
                     id: 1,
                     name: 'John',
                     email: 'john@housepal.com',
-                    h_pw: 'asdfasdf',
+                    password: 'asdfasdf',
                     deviceId: 'blank1',
                     house_id: 1
                 },
@@ -16,7 +16,7 @@ exports.seed = function(knex, Promise) {
                     id: 2,
                     name: 'Ryan',
                     email: 'ryan@housepal.com',
-                    h_pw: 'asdfasdf',
+                    password: 'asdfasdf',
                     deviceId: 'blank2',
                     house_id: 2
                 },
@@ -24,7 +24,7 @@ exports.seed = function(knex, Promise) {
                     id: 3,
                     name: 'Cassa',
                     email: 'cassa@housepal.com',
-                    h_pw: 'asdfasdf',
+                    password: 'asdfasdf',
                     deviceId: 'blank3',
                     house_id: 1
                 },
@@ -32,7 +32,7 @@ exports.seed = function(knex, Promise) {
                     id: 4,
                     name: 'Lindsey',
                     email: 'lindsey@housepal.com',
-                    h_pw: 'asdfasdf',
+                    password: 'asdfasdf',
                     deviceId: 'blank4',
                     house_id: 1
                 },
@@ -40,7 +40,7 @@ exports.seed = function(knex, Promise) {
                     id: 5,
                     name: 'David',
                     email: 'david@housepal.com',
-                    h_pw: 'asdfasdf',
+                    password: 'asdfasdf',
                     deviceId: 'blank5',
                     house_id: 2
                 }
