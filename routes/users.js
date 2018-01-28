@@ -69,6 +69,8 @@ router.post('/signup', async function(req, res, next) {
             res.status(200).json({success: true, msg: 'Successful created new user: ', user});
         }).catch(err => {
             console.error('ERROR posting to Database ', err);
+            firebaseAdmin.auth().deleteUser(newUser.uid).then(res => console.log('res from delete fb user', res))
+            // if this fails, maybe on signin if one exists but not the other, just recreate the other?
             res.status(500).json(err)
         })
 });
