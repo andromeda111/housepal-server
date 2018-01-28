@@ -69,7 +69,7 @@ router.post('/signup', async function(req, res, next) {
             res.status(200).json({success: true, msg: 'Successful created new user: ', user});
         }).catch(err => {
             console.error('ERROR posting to Database ', err);
-            es.status(500).json(err)
+            res.status(500).json(err)
         })
 });
 
