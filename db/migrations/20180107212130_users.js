@@ -3,7 +3,7 @@ exports.up = function(knex, Promise) {
         table.increments()
         table.string('uid').notNullable().defaultTo('')
         table.string('name').notNullable()
-        table.unique('email').notNullable()
+        table.string('email').notNullable().unique()
         table.string('password').notNullable()
         table.string('deviceId').defaultTo('')
         table.integer('house_id').references('id').inTable('houses').defaultTo(null).onDelete('set null')
