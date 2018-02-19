@@ -59,13 +59,9 @@ router.post('/signup', async function(req, res, next) {
             res.status(500).json(err)
         })
 
-    console.log('after firebase');
     if (newUser.uid) {
-        console.log('starting database post');
-        
         db('users').insert(newUser, '*')
             .then(result => {
-                console.log('result of db: ', result);
                 const user = result[0];
                 console.log('new user created and stored: ', user);
                 res.status(200).json({success: true, msg: 'Successful created new user: ', user});
