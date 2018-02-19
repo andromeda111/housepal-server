@@ -60,19 +60,22 @@ router.post('/signup', async function(req, res, next) {
         })
 
     console.log('after firebase');
-
-    db('users').insert(newUser, '*')
-        .then(result => {
-            console.log('result of db: ', result);
-            const user = result[0];
-            console.log('new user created and stored: ', user);
-            res.status(200).json({success: true, msg: 'Successful created new user: ', user});
-        }).catch(err => {
-            console.error('ERROR posting to Database ', err);
-            firebaseAdmin.auth().deleteUser(newUser.uid).then(res => console.log('res from delete fb user', res))
-            // if this fails, maybe on signin if one exists but not the other, just recreate the other?
-            res.status(500).json(err)
-        })
+    if (newUser.uid) {
+        console.log('starting database post');
+        
+        db('users').insert(newUser, '*')
+            .then(result => {
+                console.log('result of db: ', result);
+                const user = result[0];
+                console.log('new user created and stored: ', user);
+                res.status(200).json({success: true, msg: 'Successful created new user: ', user});
+            }).catch(err => {
+                console.error('ERROR posting to Database ', err);
+                firebaseAdmin.auth().deleteUser(newUser.uid).then(res => console.log('res from delete fb user', res))
+                // if this fails, maybe on signin if one exists but not the other, just recreate the other?
+                res.status(500).json(err)
+            })
+    }
 });
 
 router.post('/verify', checkAuthorization, function(req, res, next) {
