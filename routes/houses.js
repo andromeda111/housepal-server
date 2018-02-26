@@ -54,11 +54,10 @@ router.post('/join', checkAuthorization, function(req, res, next) {
 	const decodedToken = req.locals.decodedToken;
 	const uid = decodedToken.uid;
 
-	const houseName = req.body.houseName;
-	const houseCode = req.body.houseCode;
+	const house = req.body;
 
 	db('houses')
-		.where({ title: houseName, code: houseCode })
+		.where(house)
 		.then(result => {
 			if (!result[0]) {
 				err();
