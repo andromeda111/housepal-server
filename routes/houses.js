@@ -5,6 +5,8 @@ const firebaseAdmin = require('firebase-admin');
 const checkAuthorization = require('../services/check-auth.middleware');
 
 router.post('/create', checkAuthorization, function(req, res, next) {
+	const decodedToken = req.locals.decodedToken;
+	const uid = decodedToken.uid;
 	const newHouse = req.body;
 
 	db('houses')
