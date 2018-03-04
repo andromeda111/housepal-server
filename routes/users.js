@@ -30,7 +30,11 @@ router.post('/signin', function (req, res, next) {
     db('users').where({ email, password })
         .then(user => {
             console.log('user: ', user);
-            res.status(200).json(user);
+            if (user[0]) {
+                res.status(200).json(user);
+            } else {
+                res.status(400).json({ error: 'User not found' });
+            }
         })
         .catch(err => {
             console.log('Error signing in user: ', err);
