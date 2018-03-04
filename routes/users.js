@@ -31,7 +31,7 @@ router.post('/signin', function (req, res, next) {
         .then(user => {
             console.log('user: ', user);
             if (user[0]) {
-                res.status(200).json(user);
+                res.status(200).json(user[0]);
             } else {
                 res.status(400).json({ error: 'User not found' });
             }
