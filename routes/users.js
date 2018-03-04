@@ -5,41 +5,42 @@ const firebaseAdmin = require('firebase-admin');
 const checkAuthorization = require('../services/check-auth.middleware')
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
     res.send('respond with a resource');
 });
 
-router.get('/current', checkAuthorization, function(req, res, next) {
+router.get('/current', checkAuthorization, function (req, res, next) {
     let decodedToken = req.locals.decodedToken;
     let uid = decodedToken.uid;
 
     db('users').where({ uid })
-    .then(result => {
-        res.status(200).json(result);
-    })
-    .catch(err => {
-        console.error('ERROR: ', err);
-        //TODO: Add Error Handling
-    })
+        .then(result => {
+            res.status(200).json(result);
+        })
+        .catch(err => {
+            console.error('ERROR: ', err);
+            //TODO: Add Error Handling
+        })
 });
 
-router.post('/signin', function(req, res, next) {
+router.post('/signin', function (req, res, next) {
     let email = req.body.email;
     let password = req.body.password;
 
     db('users').where({ email, password })
         .then(user => {
+            console.log('user: ', user);
             res.status(200).json(user);
         })
         .catch(err => {
             console.log('Error signing in user: ', err);
-            res.json(err);
+            res.status(400).json(err);
             //TODO: Add Error Handling
         })
 
 })
 
-router.post('/signup', async function(req, res, next) {
+router.post('/signup', async function (req, res, next) {
     let userCredentials = req.body;
     let newUser = {
         name: userCredentials.name,
@@ -64,7 +65,7 @@ router.post('/signup', async function(req, res, next) {
             .then(result => {
                 const user = result[0];
                 console.log('new user created and stored: ', user);
-                res.status(200).json({success: true, msg: 'Successful created new user: ', user});
+                res.status(200).json({ success: true, msg: 'Successful created new user: ', user });
             }).catch(err => {
                 console.error('ERROR posting to Database ', err);
                 firebaseAdmin.auth().deleteUser(newUser.uid).then(res => console.log('res from delete fb user', res))
@@ -74,11 +75,11 @@ router.post('/signup', async function(req, res, next) {
     }
 });
 
-router.post('/verify', checkAuthorization, function(req, res, next) {
+router.post('/verify', checkAuthorization, function (req, res, next) {
     let decodedToken = req.locals.decodedToken;
     let uid = decodedToken.uid;
 
-    res.status(200).json({success: true, uid, msg: 'authorize, bruh!'})
+    res.status(200).json({ success: true, uid, msg: 'authorize, bruh!' })
 });
 
 module.exports = router;
