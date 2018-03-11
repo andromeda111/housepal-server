@@ -39,7 +39,7 @@ router.post('/signin', function (req, res, next) {
             if (user[0]) {
                 res.status(200).json(user[0]);
             } else {
-                res.status(400).json({ error: 'User not found' });
+                throw 'User not found';
             }
         })
         .catch(err => {
