@@ -19,7 +19,7 @@ router.get('/current', checkAuthorization, function (req, res, next) {
             if (user[0]) {
                 res.status(200).json(user[0]);
             } else {
-                reject({ error: 'User not found' })
+                throw 'User not found';
             }
         })
         .catch(err => {
