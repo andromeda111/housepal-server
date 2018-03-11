@@ -15,10 +15,16 @@ router.get('/current', checkAuthorization, function (req, res, next) {
 
     db('users').where({ uid })
         .then(result => {
-            res.status(200).json(result);
+            console.log('user: ', user);
+            if (user[0]) {
+                res.status(200).json(user[0]);
+            } else {
+                res.status(400).json({ error: 'User not found' });
+            }
         })
         .catch(err => {
-            console.error('ERROR: ', err);
+            console.error('ERROR retreiving user data: ', err);
+            res.status(400).json(err);
             //TODO: Add Error Handling
         })
 });
