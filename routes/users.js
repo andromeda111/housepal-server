@@ -14,7 +14,7 @@ router.get('/current', checkAuthorization, function (req, res, next) {
     let uid = decodedToken.uid;
 
     db('users').where({ uid })
-        .then(result => {
+        .then(user => {
             console.log('user: ', user);
             if (user[0]) {
                 res.status(200).json(user[0]);
