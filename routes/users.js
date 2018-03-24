@@ -26,7 +26,7 @@ router.get('/current', checkAuthorization, function (req, res, next) {
             }
         })
         .catch(err => {
-            console.error('ERROR retreiving user data: ', err);
+            console.error('ERROR retrieving user data: ', err);
             res.status(400).json(err);
             //TODO: Add Error Handling
         })
@@ -47,7 +47,7 @@ router.get('/roommates/:house_id', checkAuthorization, function (req, res, next)
             res.status(200).json(roommates);
         })
         .catch(err => {
-            console.error('ERROR retreiving roommate data: ', err);
+            console.error('ERROR retrieving roommate data: ', err);
             res.status(400).json(err);
             //TODO: Add Error Handling
         })

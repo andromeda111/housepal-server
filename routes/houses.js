@@ -4,7 +4,26 @@ const db = require('../db');
 const firebaseAdmin = require('firebase-admin');
 const checkAuthorization = require('../services/check-auth.middleware');
 
-router.post('/create', checkAuthorization, function(req, res, next) {
+// GET House
+router.get('/houses/:house_id', checkAuthorization, function (req, res, next) {
+	let decodedToken = req.locals.decodedToken;
+	let uid = decodedToken.uid;
+	let houseID = req.params.house_id;
+	console.log(decodedToken);
+
+	db('houses').where({ house_id: houseID })
+		.then(house => {
+			console.log('house: ', house);
+			res.status(200).json(house);
+		})
+		.catch(err => {
+			console.error('ERROR retrieving house data: ', err);
+			res.status(400).json(err);
+			//TODO: Add Error Handling
+		})
+});
+
+router.post('/create', checkAuthorization, function (req, res, next) {
 	const decodedToken = req.locals.decodedToken;
 	const uid = decodedToken.uid;
 	const newHouse = req.body;
@@ -52,7 +71,7 @@ router.post('/create', checkAuthorization, function(req, res, next) {
 		});
 });
 
-router.post('/join', checkAuthorization, function(req, res, next) {
+router.post('/join', checkAuthorization, function (req, res, next) {
 	const decodedToken = req.locals.decodedToken;
 	const uid = decodedToken.uid;
 
