@@ -31,7 +31,7 @@ router.get('/roommates', checkAuthorization, function (req, res, next) {
     let houseID = decodedToken.houseID;
     console.log(decodedToken);
 
-    db('users').where({ house_id: houseID })
+    db('users').select('*', 'house_id as houseID').where({ house_id: houseID })
         .then(roommates => {
             console.log('roommates: ', roommates);
             if (roommates[0]) {
