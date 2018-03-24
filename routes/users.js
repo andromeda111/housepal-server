@@ -14,7 +14,6 @@ router.get('/current', checkAuthorization, function (req, res, next) {
             console.log('user: ', result);
             if (result[0]) {
                 user = {
-                    id: result[0].id,
                     uid: result[0].uid,
                     name: result[0].name,
                     email: result[0].email,
@@ -66,7 +65,6 @@ router.post('/signin', function (req, res, next) {
             console.log('user: ', result);
             if (result[0]) {
                 user = {
-                    id: result[0].id,
                     uid: result[0].uid,
                     name: result[0].name,
                     email: result[0].email,
