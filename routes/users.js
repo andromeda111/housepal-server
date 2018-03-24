@@ -44,11 +44,7 @@ router.get('/roommates/:house_id', checkAuthorization, function (req, res, next)
         .whereNot({ uid })
         .then(roommates => {
             console.log('roommates: ', roommates);
-            if (roommates[0]) {
-                res.status(200).json(roommates);
-            } else {
-                throw 'No roommates associated with this house ID';
-            }
+            res.status(200).json(roommates);
         })
         .catch(err => {
             console.error('ERROR retreiving roommate data: ', err);
