@@ -33,9 +33,9 @@ router.get('/current', checkAuthorization, function (req, res, next) {
 });
 
 // GET Roommates
-router.get('/roommates', checkAuthorization, function (req, res, next) {
+router.get('/roommates/:house_id', checkAuthorization, function (req, res, next) {
     let decodedToken = req.locals.decodedToken;
-    let houseID = decodedToken.houseID;
+    let houseID = req.params.house_id;
     console.log(decodedToken);
 
     db('users').select('uid', 'name', 'house_id as houseID').where({ house_id: houseID })
