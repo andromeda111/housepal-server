@@ -10,11 +10,11 @@ router.get('/id/:house_id', checkAuthorization, function (req, res, next) {
 	let uid = decodedToken.uid;
 	let houseID = req.params.house_id;
 	console.log(decodedToken);
-
+	// Add error catch if houseID = null?
 	db('houses').where({ id: houseID })
 		.then(house => {
-			console.log('house: ', house);
-			res.status(200).json(house);
+			console.log('house: ', house[0]);
+			res.status(200).json(house[0]);
 		})
 		.catch(err => {
 			console.error('ERROR retrieving house data: ', err);
