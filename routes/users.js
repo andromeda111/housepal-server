@@ -4,11 +4,7 @@ const db = require('../db')
 const firebaseAdmin = require('firebase-admin');
 const checkAuthorization = require('../services/check-auth.middleware')
 
-/* GET users listing. */
-router.get('/', function (req, res, next) {
-    res.send('respond with a resource');
-});
-
+// GET Current Active User
 router.get('/current', checkAuthorization, function (req, res, next) {
     let decodedToken = req.locals.decodedToken;
     let uid = decodedToken.uid;
@@ -29,6 +25,29 @@ router.get('/current', checkAuthorization, function (req, res, next) {
         })
 });
 
+// GET Roommates
+router.get('/roommates', checkAuthorization, function (req, res, next) {
+    let decodedToken = req.locals.decodedToken;
+    let houseID = decodedToken.houseID;
+    console.log(decodedToken);
+
+    db('users').where({ house_id: houseID })
+        .then(roommates => {
+            console.log('roommates: ', roommates);
+            if (roommates[0]) {
+                res.status(200).json(roommates);
+            } else {
+                throw 'No roommates associated with this house ID';
+            }
+        })
+        .catch(err => {
+            console.error('ERROR retreiving roommate data: ', err);
+            res.status(400).json(err);
+            //TODO: Add Error Handling
+        })
+});
+
+// Sign In
 router.post('/signin', function (req, res, next) {
     let email = req.body.email;
     let password = req.body.password;
@@ -50,6 +69,7 @@ router.post('/signin', function (req, res, next) {
 
 })
 
+// Sign Up
 router.post('/signup', async function (req, res, next) {
     let userCredentials = req.body;
     let newUser = {
@@ -83,13 +103,6 @@ router.post('/signup', async function (req, res, next) {
                 res.status(500).json(err)
             })
     }
-});
-
-router.post('/verify', checkAuthorization, function (req, res, next) {
-    let decodedToken = req.locals.decodedToken;
-    let uid = decodedToken.uid;
-
-    res.status(200).json({ success: true, uid, msg: 'authorize, bruh!' })
 });
 
 module.exports = router;

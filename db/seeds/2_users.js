@@ -1,7 +1,7 @@
-exports.seed = function(knex, Promise) {
+exports.seed = function (knex, Promise) {
     // Deletes ALL existing entries
     return knex('users').del()
-        .then(function() {
+        .then(function () {
             // Inserts seed entries
             return knex('users').insert([
                 {
@@ -9,7 +9,7 @@ exports.seed = function(knex, Promise) {
                     name: 'John',
                     email: 'john@housepal.com',
                     password: 'asdfasdf',
-                    deviceId: 'blank1',
+                    device_id: 'blank1',
                     house_id: 1
                 },
                 {
@@ -17,7 +17,7 @@ exports.seed = function(knex, Promise) {
                     name: 'Ryan',
                     email: 'ryan@housepal.com',
                     password: 'asdfasdf',
-                    deviceId: 'blank2',
+                    device_id: 'blank2',
                     house_id: 2
                 },
                 {
@@ -25,7 +25,7 @@ exports.seed = function(knex, Promise) {
                     name: 'Cassa',
                     email: 'cassa@housepal.com',
                     password: 'asdfasdf',
-                    deviceId: 'blank3',
+                    device_id: 'blank3',
                     house_id: 1
                 },
                 {
@@ -33,7 +33,7 @@ exports.seed = function(knex, Promise) {
                     name: 'Lindsey',
                     email: 'lindsey@housepal.com',
                     password: 'asdfasdf',
-                    deviceId: 'blank4',
+                    device_id: 'blank4',
                     house_id: 1
                 },
                 {
@@ -41,7 +41,7 @@ exports.seed = function(knex, Promise) {
                     name: 'David',
                     email: 'david@housepal.com',
                     password: 'asdfasdf',
-                    deviceId: 'blank5',
+                    device_id: 'blank5',
                     house_id: 2
                 }
             ]);
