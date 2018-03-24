@@ -9,7 +9,7 @@ router.get('/current', checkAuthorization, function (req, res, next) {
     let decodedToken = req.locals.decodedToken;
     let uid = decodedToken.uid;
 
-    db('users').where({ uid })
+    db('users').select('*', 'house_id as houseID').where({ uid })
         .then(user => {
             console.log('user: ', user);
             if (user[0]) {
@@ -53,6 +53,7 @@ router.post('/signin', function (req, res, next) {
     let password = req.body.password;
 
     db('users').where({ email, password })
+        .returning('*', 'house_id as houseID')
         .then(user => {
             console.log('user: ', user);
             if (user[0]) {
@@ -92,6 +93,7 @@ router.post('/signup', async function (req, res, next) {
 
     if (newUser.uid) {
         db('users').insert(newUser, '*')
+            .returning('*', 'house_id as houseID')
             .then(result => {
                 const user = result[0];
                 console.log('new user created and stored: ', user);
