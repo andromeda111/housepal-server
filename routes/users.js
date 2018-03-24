@@ -9,11 +9,19 @@ router.get('/current', checkAuthorization, function (req, res, next) {
     let decodedToken = req.locals.decodedToken;
     let uid = decodedToken.uid;
 
-    db('users').select('*', 'house_id as houseID').where({ uid })
-        .then(user => {
-            console.log('user: ', user);
-            if (user[0]) {
-                res.status(200).json(user[0]);
+    db('users').where({ uid })
+        .then(result => {
+            console.log('user: ', result);
+            if (result[0]) {
+                user = {
+                    id: result[0].id,
+                    uid: result[0].uid,
+                    name: result[0].name,
+                    email: result[0].email,
+                    houseID: result[0].house_id,
+                    deviceID: result[0].device_id
+                };
+                res.status(200).json(user);
             } else {
                 throw 'User not found';
             }
@@ -31,7 +39,7 @@ router.get('/roommates', checkAuthorization, function (req, res, next) {
     let houseID = decodedToken.houseID;
     console.log(decodedToken);
 
-    db('users').select('*', 'house_id as houseID').where({ house_id: houseID })
+    db('users').select('uid', 'name', 'house_id as houseID').where({ house_id: houseID })
         .then(roommates => {
             console.log('roommates: ', roommates);
             if (roommates[0]) {
@@ -51,13 +59,22 @@ router.get('/roommates', checkAuthorization, function (req, res, next) {
 router.post('/signin', function (req, res, next) {
     let email = req.body.email;
     let password = req.body.password;
+    let user = {};
 
     db('users').where({ email, password })
-        .returning('*', 'house_id as houseID')
-        .then(user => {
-            console.log('user: ', user);
-            if (user[0]) {
-                res.status(200).json(user[0]);
+        .then(result => {
+            console.log('user: ', result);
+            if (result[0]) {
+                user = {
+                    id: result[0].id,
+                    uid: result[0].uid,
+                    name: result[0].name,
+                    email: result[0].email,
+                    houseID: result[0].house_id,
+                    deviceID: result[0].device_id
+                };
+
+                res.status(200).json(user);
             } else {
                 throw 'User not found';
             }
@@ -67,7 +84,6 @@ router.post('/signin', function (req, res, next) {
             res.status(400).json(err);
             //TODO: Add Error Handling
         })
-
 })
 
 // Sign Up
@@ -78,7 +94,7 @@ router.post('/signup', async function (req, res, next) {
         email: userCredentials.email,
         password: userCredentials.password,
         uid: ''
-    }
+    };
     console.log(newUser);
 
     await firebaseAdmin.auth().createUser(userCredentials)
@@ -88,15 +104,22 @@ router.post('/signup', async function (req, res, next) {
         })
         .catch(err => {
             console.log('ERROR Firebase Create User', err);
-            res.status(500).json(err)
+            res.status(500).json(err);
         })
 
     if (newUser.uid) {
         db('users').insert(newUser, '*')
-            .returning('*', 'house_id as houseID')
             .then(result => {
-                const user = result[0];
-                console.log('new user created and stored: ', user);
+                console.log('new user created and stored: ', result[0]);
+                const user = {
+                    id: result[0].id,
+                    uid: result[0].uid,
+                    name: result[0].name,
+                    email: result[0].email,
+                    houseID: result[0].house_id,
+                    deviceID: result[0].device_id
+                };
+
                 res.status(200).json({ success: true, msg: 'Successful created new user: ', user });
             }).catch(err => {
                 console.error('ERROR posting to Database ', err);
