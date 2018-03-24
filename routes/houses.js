@@ -5,13 +5,13 @@ const firebaseAdmin = require('firebase-admin');
 const checkAuthorization = require('../services/check-auth.middleware');
 
 // GET House
-router.get('/houses/:house_id', checkAuthorization, function (req, res, next) {
+router.get('/id/:house_id', checkAuthorization, function (req, res, next) {
 	let decodedToken = req.locals.decodedToken;
 	let uid = decodedToken.uid;
 	let houseID = req.params.house_id;
 	console.log(decodedToken);
 
-	db('houses').where({ house_id: houseID })
+	db('houses').where({ id: houseID })
 		.then(house => {
 			console.log('house: ', house);
 			res.status(200).json(house);
