@@ -75,7 +75,7 @@ router.post('/remove-roommate', checkAuthorization, function(req, res, next) {
             }
         })
 
-        res.status(200).json(msg: 'success!!')
+        res.status(200).json({msg: 'success!!'})
     })
   });
 
