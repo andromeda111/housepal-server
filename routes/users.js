@@ -53,6 +53,32 @@ router.get('/roommates/:house_id', checkAuthorization, function (req, res, next)
         })
 });
 
+// Remove Roommate
+router.post('/remove-roommate', checkAuthorization, function(req, res, next) {
+    let decodedToken = req.locals.decodedToken;
+    let uid = decodedToken.uid;
+    let roommate = req.body.roommate;
+
+    db('users').update({house_id: null}).where({ uid: roommate.uid }).then(() => {
+        db('chores').where({ house_id: roommate.houseID }).then(chores => {
+            console.log('chores', chores);
+            
+            if (chores) {
+                let choresWithUser = chores.filter(chore => {
+                    return chore.cycle.cycleList.includes(roommate.uid);
+                })
+                console.log(choresWithUser);
+                
+                choresWithUser.forEach(chore => {
+                    db('chores').where({id: chore.id}).del('*').then(() => {})
+                })
+            }
+        })
+
+        res.status(200).json(msg: 'success!!')
+    })
+  });
+
 // Sign In
 router.post('/signin', function (req, res, next) {
     let email = req.body.email;
