@@ -63,6 +63,7 @@ router.post('/remove-roommate', checkAuthorization, function(req, res, next) {
     
     db('users').where({ uid: roommate.uid, house_id: roommate.houseID }).then(user => {
         console.log('user', user);
+        console.log('!!!!!!!!!!!!!!!!!!', (user.house_id === roommate.houseID));
         
         if (user.house_id === roommate.houseID) {
             console.log('in if');
@@ -83,6 +84,8 @@ router.post('/remove-roommate', checkAuthorization, function(req, res, next) {
                 res.status(200).json({msg: 'success!!'});
             })
         } else {
+            console.log('in else');
+            
             res.status(200).json({msg: 'success!!'});
         }
     });
