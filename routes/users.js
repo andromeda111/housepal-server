@@ -58,32 +58,51 @@ router.post('/remove-roommate', checkAuthorization, function(req, res, next) {
     let decodedToken = req.locals.decodedToken;
     let uid = decodedToken.uid;
     let roommate = req.body;
-    console.log('roommate body: ', roommate);
-    
-    db('users').where({ uid: roommate.uid, house_id: roommate.houseID }).then(res => {
-        console.log('RM Check: ', res);
-        
-    })
 
-    db('users').update({house_id: null}).where({ uid: roommate.uid }).then(() => {
-        db('chores').where({ house_id: roommate.houseID }).then(chores => {
-            console.log('chores', chores);
-            
+    db('users').where({ uid: roommate.uid, house_id: roommate.houseID }).then(res => {
+        if (res.house_id === roommate.houseID) {
+            db('users').update({house_id: null}).where({ uid: roommate.uid }).then(() => {
+                db('chores').where({ house_id: roommate.houseID }).then(chores => {
+                    // Check this again when building chores section
+                    if (chores) {
+                        let choresWithUser = chores.filter(chore => {
+                            return chore.cycle.cycleList.includes(roommate.uid);
+                        });
+
+                        choresWithUser.forEach(chore => {
+                            db('chores').where({id: chore.id}).del('*').then(() => {});
+                        });
+                    }
+                })
+                res.status(200).json({msg: 'success!!'});
+            })
+        } else {
+            res.status(200).json({msg: 'success!!'});
+        }
+    });
+});
+
+router.post('/leave', checkAuthorization, function(req, res, next) {
+    let decodedToken = req.locals.decodedToken;
+    let uid = decodedToken.uid;
+    let houseID = req.body;
+
+    db('users').update({house_id: null}).where({ uid }).then(() => {
+        db('chores').where({ house_id: houseID }).then(chores => {
+            // Check this again when building chores section
             if (chores) {
                 let choresWithUser = chores.filter(chore => {
-                    return chore.cycle.cycleList.includes(roommate.uid);
-                })
-                console.log(choresWithUser);
-                
+                    return chore.cycle.cycleList.includes(uid);
+                });
+
                 choresWithUser.forEach(chore => {
-                    db('chores').where({id: chore.id}).del('*').then(() => {})
-                })
+                    db('chores').where({id: chore.id}).del('*').then(() => {});
+                });
             }
         })
-
-        res.status(200).json({msg: 'success!!'})
+        res.status(200).json({msg: 'success!!'});
     })
-  });
+});
 
 // Sign In
 router.post('/signin', function (req, res, next) {
