@@ -92,7 +92,7 @@ router.post('/join', checkAuthorization, function (req, res, next) {
 						res.status(200).send({
 							success: true,
 							msg: 'House successfully joined.',
-							houseID: user.house_id
+							houseID: houseID
 						});
 					});
 			}
