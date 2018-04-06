@@ -62,12 +62,7 @@ router.post('/remove-roommate', checkAuthorization, function(req, res, next) {
     
     
     db('users').where({ uid: roommate.uid, house_id: roommate.houseID }).then(user => {
-        console.log('user', user);
-        console.log('!!!!!!!!!!!!!!!!!!', (user.house_id === roommate.houseID));
-        
-        if (user.house_id === roommate.houseID) {
-            console.log('in if');
-            
+        if (user.length) {
             db('users').update({house_id: null}).where({ uid: roommate.uid }).then(() => {
                 db('chores').where({ house_id: roommate.houseID }).then(chores => {
                     // Check this again when building chores section                 
@@ -84,8 +79,6 @@ router.post('/remove-roommate', checkAuthorization, function(req, res, next) {
                 res.status(200).json({msg: 'success!!'});
             })
         } else {
-            console.log('in else');
-            
             res.status(200).json({msg: 'success!!'});
         }
     });
