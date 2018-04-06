@@ -60,6 +60,10 @@ router.post('/remove-roommate', checkAuthorization, function(req, res, next) {
     let roommate = req.body;
     console.log('roommate body: ', roommate);
     
+    db('users').where({ uid: roommate.uid, house_id: roommate.houseID }).then(res => {
+        console.log('RM Check: ', res);
+        
+    })
 
     db('users').update({house_id: null}).where({ uid: roommate.uid }).then(() => {
         db('chores').where({ house_id: roommate.houseID }).then(chores => {
