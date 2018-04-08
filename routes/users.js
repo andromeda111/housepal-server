@@ -54,16 +54,14 @@ router.get('/roommates/:house_id', checkAuthorization, function (req, res, next)
 });
 
 // Remove Roommate
-router.post('/remove-roommate', checkAuthorization, function(req, res, next) {
+router.post('/remove-roommate', checkAuthorization, function (req, res, next) {
     let decodedToken = req.locals.decodedToken;
     let uid = decodedToken.uid;
     let roommate = req.body;
-    console.log(roommate);
-    
-    
+
     db('users').where({ uid: roommate.uid, house_id: roommate.houseID }).then(user => {
         if (user.length) {
-            db('users').update({house_id: null}).where({ uid: roommate.uid }).then(() => {
+            db('users').update({ house_id: null }).where({ uid: roommate.uid }).then(() => {
                 db('chores').where({ house_id: roommate.houseID }).then(chores => {
                     // Check this again when building chores section                 
                     if (chores) {
@@ -72,24 +70,24 @@ router.post('/remove-roommate', checkAuthorization, function(req, res, next) {
                         });
 
                         choresWithUser.forEach(chore => {
-                            db('chores').where({id: chore.id}).del('*').then(() => {});
+                            db('chores').where({ id: chore.id }).del('*').then(() => { });
                         });
                     }
                 })
-                res.status(200).json({msg: 'success!!'});
+                res.status(200).json({ msg: 'success!!' });
             })
         } else {
-            res.status(200).json({msg: 'success!!'});
+            res.status(200).json({ msg: 'success!!' });
         }
     });
 });
 
-router.post('/leave', checkAuthorization, function(req, res, next) {
+router.post('/leave', checkAuthorization, function (req, res, next) {
     let decodedToken = req.locals.decodedToken;
     let uid = decodedToken.uid;
-    let houseID = req.body;
+    let houseID = req.body.houseID;
 
-    db('users').update({house_id: null}).where({ uid }).then(() => {
+    db('users').update({ house_id: null }).where({ uid }).then(() => {
         db('chores').where({ house_id: houseID }).then(chores => {
             // Check this again when building chores section
             if (chores) {
@@ -98,11 +96,11 @@ router.post('/leave', checkAuthorization, function(req, res, next) {
                 });
 
                 choresWithUser.forEach(chore => {
-                    db('chores').where({id: chore.id}).del('*').then(() => {});
+                    db('chores').where({ id: chore.id }).del('*').then(() => { });
                 });
             }
         })
-        res.status(200).json({msg: 'success!!'});
+        res.status(200).json({ msg: 'success!!' });
     })
 });
 
