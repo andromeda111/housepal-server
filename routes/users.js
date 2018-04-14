@@ -73,8 +73,19 @@ router.post('/remove-roommate', checkAuthorization, function (req, res, next) {
                             db('chores').where({ id: chore.id }).del('*').then(() => { });
                         });
                     }
-                })
-                res.status(200).json({ msg: 'success!!' });
+                });
+                db('users').select('uid', 'name', 'house_id as houseID')
+                    .where({ house_id: roommate.houseID })
+                    .whereNot({ uid })
+                    .then(roommates => {
+                        console.log('roommates: ', roommates);
+                        res.status(200).json(roommates);
+                    })
+                    .catch(err => {
+                        console.error('ERROR retrieving roommate data: ', err);
+                        res.status(400).json(err);
+                        //TODO: Add Error Handling
+                    })
             })
         } else {
             res.status(200).json({ msg: 'success!!' });
