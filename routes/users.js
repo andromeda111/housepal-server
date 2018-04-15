@@ -11,7 +11,6 @@ router.get('/current', checkAuthorization, function (req, res, next) {
 
     db('users').where({ uid })
         .then(result => {
-            console.log('user: ', result);
             if (result[0]) {
                 user = {
                     uid: result[0].uid,
@@ -22,13 +21,12 @@ router.get('/current', checkAuthorization, function (req, res, next) {
                 };
                 res.status(200).json(user);
             } else {
-                throw 'User not found';
+                throw 'User not found.';
             }
         })
         .catch(err => {
             console.error('ERROR retrieving user data: ', err);
-            res.status(400).json(err);
-            //TODO: Add Error Handling
+            res.status(400).json({ message: err });
         })
 });
 
@@ -37,19 +35,16 @@ router.get('/roommates/:house_id', checkAuthorization, function (req, res, next)
     let decodedToken = req.locals.decodedToken;
     let uid = decodedToken.uid;
     let houseID = req.params.house_id;
-    console.log(decodedToken);
 
     db('users').select('uid', 'name', 'house_id as houseID')
         .where({ house_id: houseID })
         .whereNot({ uid })
         .then(roommates => {
-            console.log('roommates: ', roommates);
             res.status(200).json(roommates);
         })
         .catch(err => {
             console.error('ERROR retrieving roommate data: ', err);
-            res.status(400).json(err);
-            //TODO: Add Error Handling
+            res.status(400).json({ message: err });
         })
 });
 
