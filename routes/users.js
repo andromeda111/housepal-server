@@ -98,7 +98,7 @@ router.post('/leave', checkAuthorization, function (req, res, next) {
     db('users').update({ house_id: null }).where({ uid }).then(() => {
         db('chores').where({ house_id: houseID }).then(chores => {
             // Check this again when building chores section
-            if (chores) {
+            if (chores.length) {
                 let choresWithUser = chores.filter(chore => {
                     return chore.cycle.cycleList.includes(uid);
                 });
@@ -108,7 +108,7 @@ router.post('/leave', checkAuthorization, function (req, res, next) {
                 });
             }
         })
-        res.status(200);
+        res.status(200).send('Left House');
     })
     .catch(err => {
         console.error('ERROR: ', err);
