@@ -21,11 +21,11 @@ router.get('/current', checkAuthorization, function (req, res, next) {
                 };
                 res.status(200).json(user);
             } else {
-                throw 'User not found.';
+                throw 'Unable to retrieve your user data. Please try again.';
             }
         })
         .catch(err => {
-            console.error('ERROR retrieving user data: ', err);
+            console.error('ERROR:', err);
             res.status(400).json({ message: err });
         })
 });
