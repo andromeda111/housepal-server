@@ -94,33 +94,27 @@ router.post('/leave', checkAuthorization, function (req, res, next) {
     let decodedToken = req.locals.decodedToken;
     let uid = decodedToken.uid;
     let houseID = req.body.houseID;
-    console.log('before db');
-    
-    db('users').update({ house_id: null }).where({ uid })
-        .then(() => {
-            console.log('in then');
-            
-            db('chores').where({ house_id: houseID }).then(chores => {
-                // Check this again when building chores section
-                console.log('chores', chores);
-                
-                if (chores.length) {
-                    let choresWithUser = chores.filter(chore => {
-                        return chore.cycle.cycleList.includes(uid);
-                    });
 
-                    choresWithUser.forEach(chore => {
-                        db('chores').where({ id: chore.id }).del('*').then(() => { });
-                    });
-                }
-            })
-            res.status(200);
+    db('users').update({ house_id: null }).where({ uid }).then(() => {
+        db('chores').where({ house_id: houseID }).then(chores => {
+            // Check this again when building chores section
+            if (chores) {
+                let choresWithUser = chores.filter(chore => {
+                    return chore.cycle.cycleList.includes(uid);
+                });
+
+                choresWithUser.forEach(chore => {
+                    db('chores').where({ id: chore.id }).del('*').then(() => { });
+                });
+            }
         })
-        .catch(err => {
-            console.error('ERROR: ', err);
-            const message = 'There was an error leaving the house. Please sign out and try again.';
-            res.status(400).json({ message });
-        })
+        res.status(200).json({ msg: 'success!!' });
+    })
+    .catch(err => {
+        console.error('ERROR: ', err);
+        const message = 'There was an error leaving the house. Please sign out and try again.';
+        res.status(400).json({ message });
+    })
 });
 
 // Sign In
