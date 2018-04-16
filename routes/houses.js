@@ -56,11 +56,7 @@ router.post('/create', checkAuthorization, function (req, res, next) {
 						.where({ uid })
 						.returning('*')
 						.then(user => {
-							res.status(200).send({
-								success: true,
-								msg: 'House successfully created.',
-								houseID: houseID
-							});
+							res.status(200).send({ houseID: houseID });
 						});
 				});
 		})
@@ -88,18 +84,14 @@ router.post('/join', checkAuthorization, function (req, res, next) {
 					.where({ uid })
 					.returning('*')
 					.then(user => {
-						res.status(200).send({
-							success: true,
-							msg: 'House successfully joined.',
-							houseID: houseID
-						});
+						res.status(200).send({ houseID: houseID });
 					});
 			}
 		})
 		.catch(err => {
 			console.error('ERROR: ', err);
-			const message = 'The house name or share code does not match. Try again.';
-			res.status(400).send({ message });
+			const message = 'The house name or share code does not match. Please try again.';
+			res.status(400).json({ message });
 		});
 });
 

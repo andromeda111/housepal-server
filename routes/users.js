@@ -89,6 +89,7 @@ router.post('/remove-roommate', checkAuthorization, function (req, res, next) {
     });
 });
 
+// Leave House
 router.post('/leave', checkAuthorization, function (req, res, next) {
     let decodedToken = req.locals.decodedToken;
     let uid = decodedToken.uid;
@@ -107,7 +108,12 @@ router.post('/leave', checkAuthorization, function (req, res, next) {
                 });
             }
         })
-        res.status(200).json({ msg: 'success!!' });
+        res.status(200);
+    })
+    .catch(err => {
+        console.error('ERROR: ', err);
+        const message = 'There was an error leaving the house. Please sign out and try again.';
+        res.status(400).json({ message });
     })
 });
 
