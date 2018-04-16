@@ -9,17 +9,19 @@ router.get('/id/:house_id', checkAuthorization, function (req, res, next) {
 	let decodedToken = req.locals.decodedToken;
 	let uid = decodedToken.uid;
 	let houseID = req.params.house_id;
-	console.log(decodedToken);
-	// Add error catch if houseID = null?
+
 	db('houses').where({ id: houseID })
 		.then(house => {
-			console.log('house: ', house[0]);
-			res.status(200).json(house[0]);
+			if (house.length) {
+				res.status(200).json(house[0])
+			} else {
+				throw 'No house found.';
+			}
 		})
 		.catch(err => {
-			console.error('ERROR retrieving house data: ', err);
-			res.status(400).json(err);
-			//TODO: Add Error Handling
+			console.error('ERROR:', err);
+			const message = 'Unable to find this house. It may have been deleted. Please sign out and try again, or, create a new house.';
+			res.status(400).json({ message });
 		})
 });
 
@@ -54,27 +56,20 @@ router.post('/create', checkAuthorization, function (req, res, next) {
 						.where({ uid })
 						.returning('*')
 						.then(user => {
-							res.status(200).send({
-								success: true,
-								msg: 'House successfully created.',
-								houseID: houseID
-							});
+							res.status(200).send({ houseID: houseID });
 						});
 				});
 		})
 		.catch(err => {
-			res.status(400).send({
-				success: false,
-				msg: 'Try again; house already exists.',
-				err
-			});
+			console.error('ERROR: ', err); 
+			const message = 'A house already exists with this name, or something went wrong while making it. Sorry! Please try a new name.';
+			res.status(400).json({ message });
 		});
 });
 
 router.post('/join', checkAuthorization, function (req, res, next) {
 	const decodedToken = req.locals.decodedToken;
 	const uid = decodedToken.uid;
-
 	const house = req.body;
 
 	db('houses')
@@ -89,16 +84,14 @@ router.post('/join', checkAuthorization, function (req, res, next) {
 					.where({ uid })
 					.returning('*')
 					.then(user => {
-						res.status(200).send({
-							success: true,
-							msg: 'House successfully joined.',
-							houseID: houseID
-						});
+						res.status(200).send({ houseID: houseID });
 					});
 			}
 		})
-		.catch(() => {
-			res.status(400).send({ success: false, msg: 'Try again; house does not exist.' });
+		.catch(err => {
+			console.error('ERROR: ', err);
+			const message = 'The house name or share code does not match. Please try again.';
+			res.status(400).json({ message });
 		});
 });
 
