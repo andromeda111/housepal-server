@@ -84,7 +84,8 @@ router.post('/remove-roommate', checkAuthorization, function (req, res, next) {
                     })
             })
         } else {
-            res.status(200).json([]);
+            const message = 'User is not a member of this house. Please re-open the menu to refresh the list of current roommates.'
+            res.status(400).json({ message });
         }
     });
 });
