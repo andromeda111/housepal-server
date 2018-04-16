@@ -80,11 +80,11 @@ router.post('/remove-roommate', checkAuthorization, function (req, res, next) {
                     .catch(err => {
                         console.error('ERROR', err);
                         const message = 'Something happened while trying to remove a roommate.';
-                        res.status(400).json(err);
+                        res.status(400).json({ message });
                     })
             })
         } else {
-            res.status(200).json({ msg: 'success!!' });
+            res.status(200).json([]);
         }
     });
 });
