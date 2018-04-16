@@ -44,7 +44,8 @@ router.get('/roommates/:house_id', checkAuthorization, function (req, res, next)
         })
         .catch(err => {
             console.error('ERROR retrieving roommate data: ', err);
-            res.status(400).json(err);
+            const message = 'There was an error retrieving the list of roommates. Please try again.';
+            res.status(400).json({ message });
         })
 });
 

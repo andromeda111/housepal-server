@@ -9,17 +9,19 @@ router.get('/id/:house_id', checkAuthorization, function (req, res, next) {
 	let decodedToken = req.locals.decodedToken;
 	let uid = decodedToken.uid;
 	let houseID = req.params.house_id;
-	console.log(decodedToken);
-	// Add error catch if houseID = null?
+
 	db('houses').where({ id: houseID })
 		.then(house => {
-			console.log('house: ', house[0]);
-			res.status(200).json(house[0]);
+			if (house.length) {
+				res.status(200).json(house[0])
+			} else {
+				throw 'No house found.';
+			}
 		})
 		.catch(err => {
 			console.error('ERROR retrieving house data: ', err);
-			res.status(400).json(err);
-			//TODO: Add Error Handling
+			const message = 'Unable to find this house. It may have been deleted. Please sign out and try again, or, create a new house.';
+			res.status(400).json({ message });
 		})
 });
 
