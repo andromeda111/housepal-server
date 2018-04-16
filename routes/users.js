@@ -21,7 +21,7 @@ router.get('/current', checkAuthorization, function (req, res, next) {
                 };
                 res.status(200).json(user);
             } else {
-                throw 'Unable to retrieve your user data. Please try again.';
+                throw 'Unable to retrieve your user data. Please sign out and try again.';
             }
         })
         .catch(err => {
@@ -78,9 +78,9 @@ router.post('/remove-roommate', checkAuthorization, function (req, res, next) {
                         res.status(200).json(roommates);
                     })
                     .catch(err => {
-                        console.error('ERROR retrieving roommate data: ', err);
+                        console.error('ERROR', err);
+                        const message = 'Something happened while trying to remove a roommate.';
                         res.status(400).json(err);
-                        //TODO: Add Error Handling
                     })
             })
         } else {
