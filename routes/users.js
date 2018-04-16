@@ -126,7 +126,6 @@ router.post('/signin', function (req, res, next) {
 
     db('users').where({ email, password })
         .then(result => {
-            console.log('user: ', result);
             if (result[0]) {
                 user = {
                     uid: result[0].uid,
@@ -138,13 +137,13 @@ router.post('/signin', function (req, res, next) {
 
                 res.status(200).json(user);
             } else {
-                throw 'User not found';
+                throw 'Email or password did not match an existing user. Please try again or sign up.';
             }
         })
         .catch(err => {
-            console.log('Error signing in user: ', err);
-            res.status(400).json(err);
-            //TODO: Add Error Handling
+            console.log('ERROR: ', err);
+            const message = err;
+            res.status(400).json({ message });
         })
 })
 
@@ -157,15 +156,13 @@ router.post('/signup', async function (req, res, next) {
         password: userCredentials.password,
         uid: ''
     };
-    console.log(newUser);
 
     await firebaseAdmin.auth().createUser(userCredentials)
         .then(firebaseUser => {
             newUser.uid = firebaseUser.uid;
-            console.log('newUser.uid set: ', newUser);
         })
         .catch(err => {
-            console.log('ERROR Firebase Create User', err);
+            console.log('ERROR Firebase Create User: ', err);
             res.status(500).json(err);
         })
 
@@ -184,10 +181,11 @@ router.post('/signup', async function (req, res, next) {
 
                 res.status(200).json({ success: true, msg: 'Successful created new user: ', user });
             }).catch(err => {
-                console.error('ERROR posting to Database ', err);
+                console.error('ERROR posting user to Database ', err);
                 firebaseAdmin.auth().deleteUser(newUser.uid).then(res => console.log('res from delete fb user', res))
                 // if this fails, maybe on signin if one exists but not the other, just recreate the other?
-                res.status(500).json(err)
+                const message = 'There was an issue creating a user. Please try again or contact HousePal.';
+                res.status(500).json({ message })
             })
     }
 });
