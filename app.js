@@ -18,7 +18,7 @@ if (process.env.NODE_ENV !== 'production') {
 const index = require('./routes/index');
 const users = require('./routes/users');
 const houses = require('./routes/houses');
-const chores = require('./routes/users');
+const chores = require('./routes/chores');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
