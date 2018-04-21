@@ -119,6 +119,23 @@ router.post('/leave', checkAuthorization, function (req, res, next) {
         })
 });
 
+// Post Profile Image Url
+router.post('/images', checkAuthorization, function (req, res, next) {
+    let decodedToken = req.locals.decodedToken;
+    let uid = decodedToken.uid;
+    let imgUrl = req.body.imgUrl;
+
+    db('users').update({ profile_img_url: imgUrl }).where({ uid })
+        .then(() => {
+            res.status(200).json({ msg: 'success!!' });
+        })
+        .catch(err => {
+            console.error('ERROR: ', err);
+            const message = 'There was an error posting the image. Please try again.';
+            res.status(400).json({ message });
+        })
+});
+
 // Sign In
 router.post('/signin', function (req, res, next) {
     let email = req.body.email;
