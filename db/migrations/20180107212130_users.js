@@ -5,6 +5,7 @@ exports.up = function (knex, Promise) {
         table.string('name').notNullable()
         table.string('email').notNullable().unique()
         table.string('password').notNullable()
+        table.string('profile_img_url').defaultTo('')
         table.string('device_id').defaultTo('')
         table.integer('house_id').references('id').inTable('houses').defaultTo(null).onDelete('set null')
         table.timestamps(true, true)
