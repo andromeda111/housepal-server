@@ -85,11 +85,11 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
 
                     // CYCLE HOUSEMATES
                     let nextCycle = 0
-                    console.log('cycle length: ', obj.cycle.cycleList.length);
+                    console.log('cycle length: ', obj.cycle.length);
                     // Get the Index of the next due day
-                    if (obj.cycle.cycleList.length > 1) {
+                    if (obj.cycle.length > 1) {
                         console.log('checking next cycle idx');
-                        if (!obj.cycle.cycleList[obj.currentAssigned + 1]) {
+                        if (!obj.cycle[obj.currentAssigned + 1]) {
                             console.log('idx reset');
                             nextCycle = 0
                         } else {
