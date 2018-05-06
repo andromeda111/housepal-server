@@ -7,7 +7,7 @@ exports.seed = function (knex, Promise) {
                 {
                     id: 1,
                     chore: 'Clean Kitchen Counters, Sink',
-                    daysDue: { daysDue: [0, 3] },
+                    daysDue: JSON.stringify([0, 3]),
                     cycle: { cycleList: [4] },
                     currentDueDay: { currentDueDay: "2017-07-26", currentDueIdx: 1 },
                     currentAssigned: 0,
@@ -15,6 +15,19 @@ exports.seed = function (knex, Promise) {
                     done: false,
                     late: false,
                     house_id: 1
+                },
+                {
+                    id: 4,
+                    title: 'Dust and tidy',
+                    daysDue: JSON.stringify([2, 6]),
+                    currentDueDay: { date: "2018-05-8", index: 0 },
+                    cycle: JSON.stringify(['zwZfygLIMugO3xKrhRloTJtHvQm2', 'UTxHlglXk1VknBg7oTOE6leusU12', '1FOSEK8IOYZsNDwsVCE6pkyMiPC3']),
+                    currentAssigned: 'UTxHlglXk1VknBg7oTOE6leusU12',
+                    upcoming: JSON.stringify(['1FOSEK8IOYZsNDwsVCE6pkyMiPC3', 'zwZfygLIMugO3xKrhRloTJtHvQm2']),
+                    done: false,
+                    late: false,
+                    house_id: 1
+
                 },
                 {
                     id: 2,
