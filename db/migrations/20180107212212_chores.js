@@ -1,11 +1,12 @@
 exports.up = function(knex, Promise) {
     return knex.schema.createTable('chores', (table) => {
         table.increments()
-        table.string('chore').notNullable().defaultTo('')
+        table.string('title').notNullable().defaultTo('')
         table.jsonb('daysDue').notNullable()
-        table.jsonb('cycle').notNullable()
         table.jsonb('currentDueDay').notNullable()
-        table.integer('currentAssigned').defaultTo(0)
+        table.jsonb('cycle').notNullable()
+        table.string('currentAssigned').defaultTo('')
+        table.jsonb('upcoming').notNullable()
         table.boolean('dueToday').notNullable().defaultTo(false)
         table.boolean('done').notNullable().defaultTo(false)
         table.boolean('late').notNullable().defaultTo(false)

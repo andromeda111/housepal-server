@@ -18,7 +18,7 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
             console.log(obj.daysDue.daysDue[obj.currentDueDay.currentDueIdx + 1]);
             console.log('IN OBJ');
 
-
+            // PROBLEM: Chore does not remain "Done" until orignal duedate has passed.
             // Check if Chore is Done, and update/cycle
             // Get next index of daysDue
             if (obj.done) {
