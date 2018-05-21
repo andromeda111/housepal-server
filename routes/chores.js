@@ -143,7 +143,13 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
                 if (obj.dueToday === true && moment(currDay).isAfter(obj.currentDueDay.date, 'day')) {
                     obj.late = true
                 }
-                db('chores').where({ id: obj.id }).update({ data: JSON.stringify(obj) }).then((res) => {
+
+                // Stringify daysDue, cycle, and upcoming for postgres
+                obj.daysDue = JSON.stringify(obj.daysDue)
+                obj.cycle = JSON.stringify(obj.cycle)
+                obj.upcoming = JSON.stringify(obj.upcoming)
+
+                db('chores').where({ id: obj.id }).update(obj).then((res) => {
                     console.log('end algorithm, post update', res);
                 }).catch(err => console.error('ERROR in end algorithm post:', err))
             })
