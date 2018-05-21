@@ -102,7 +102,7 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
                         obj.currentAssigned.index = nextCycle
                         obj.currentAssigned.uid = obj.cycle[nextCycle];
                         obj.currentAssigned.name = users.find(user => (user.uid === obj.currentAssigned.uid)).name;
-                       
+
                         console.log('current assigned UID: ', obj.currentAssigned.uid);
                         console.log('current assigned name: ', obj.currentAssigned.name);
 
@@ -117,7 +117,7 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
                             })
                         }
                         console.log('upcoming', obj.upcoming);
-                        
+
                     }
                     console.log('END of DONE currentDueDay: ', obj.currentDueDay.date);
                 }
@@ -143,7 +143,9 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
                 if (obj.dueToday === true && moment(currDay).isAfter(obj.currentDueDay.date, 'day')) {
                     obj.late = true
                 }
-                db('chores').where({ id: obj.id }).update(obj).then(() => { })
+                db('chores').where({ id: obj.id }).update({ data: JSON.stringify(obj) }).then((res) => {
+                    console.log('end algorithm, post update', res);
+                }).catch(err => console.error('ERROR in end algorithm post:', err))
             })
 
             console.log('after');
