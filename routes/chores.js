@@ -106,16 +106,36 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
                         console.log('current assigned UID: ', obj.currentAssigned.uid);
                         console.log('current assigned name: ', obj.currentAssigned.name);
 
-                        // Set upcoming cycle array
+                        // CYCLE UPCOMING
+                        let upcomingCycle = 0
+                        console.log('cycle length: ', obj.cycle.length);
+                        // Get the Index of the next due day
                         if (obj.cycle.length > 1) {
-                            let pre = obj.cycle.slice(0, obj.currentAssigned.index);
-                            let post = obj.cycle.slice(obj.currentAssigned.index + 1);
-                            let upcoming = post.concat(pre);
-                            obj.upcoming = upcoming.map(uid => {
-                                let name = users.find(user => (user.uid === uid)).name;
-                                return { uid, name };
-                            })
+                            console.log('checking next cycle idx');
+                            if (!obj.cycle[obj.currentAssigned.index + 1]) {
+                                console.log('idx reset');
+                                upcomingCycle = 0
+                            } else {
+                                console.log('idx +1');
+                                upcomingCycle = obj.currentAssigned.index + 1
+                            }
                         }
+
+                        obj.upcoming.index = upcomingCycle
+                        obj.upcoming.uid = obj.cycle[upcomingCycle]
+                        obj.upcoming.name = users.find(user => (user.uid === obj.upcoming.uid)).name
+
+
+                        // Set upcoming cycle array
+                        // if (obj.cycle.length > 1) {
+                        //     let pre = obj.cycle.slice(0, obj.currentAssigned.index);
+                        //     let post = obj.cycle.slice(obj.currentAssigned.index + 1);
+                        //     let upcoming = post.concat(pre);
+                        //     obj.upcoming = upcoming.map(uid => {
+                        //         let name = users.find(user => (user.uid === uid)).name;
+                        //         return { uid, name };
+                        //     })
+                        // }
                         console.log('upcoming', obj.upcoming);
 
                     }

@@ -11,7 +11,7 @@ exports.seed = function (knex, Promise) {
                     currentDueDay: { date: '2018-05-09', index: 1 },
                     cycle: JSON.stringify(['UTxHlglXk1VknBg7oTOE6leusU12']),
                     currentAssigned: { uid: 'UTxHlglXk1VknBg7oTOE6leusU12', name: 'John', index: 0 },
-                    upcoming: JSON.stringify([]),
+                    upcoming: JSON.stringify({}),
                     dueToday: false,
                     done: false,
                     late: false,
@@ -24,7 +24,7 @@ exports.seed = function (knex, Promise) {
                     currentDueDay: { date: "2018-05-08", index: 0 },
                     cycle: JSON.stringify(['zwZfygLIMugO3xKrhRloTJtHvQm2', '1FOSEK8IOYZsNDwsVCE6pkyMiPC3', 'UTxHlglXk1VknBg7oTOE6leusU12']),
                     currentAssigned: { uid: '1FOSEK8IOYZsNDwsVCE6pkyMiPC3', name: 'Lindsey', index: 1 },
-                    upcoming: JSON.stringify([{ uid: 'UTxHlglXk1VknBg7oTOE6leusU12', name: 'John' }, { uid: 'zwZfygLIMugO3xKrhRloTJtHvQm2', name: 'Cassa' }]),
+                    upcoming: JSON.stringify({ index: 2, uid: 'UTxHlglXk1VknBg7oTOE6leusU12', name: 'John' }),
                     done: false,
                     late: false,
                     house_id: 1

@@ -6,7 +6,7 @@ exports.up = function(knex, Promise) {
         table.jsonb('currentDueDay').notNullable()
         table.jsonb('cycle').notNullable()
         table.jsonb('currentAssigned').notNullable()
-        table.jsonb('upcoming').notNullable()
+        table.jsonb('upcoming').defaultTo(null)
         table.boolean('dueToday').notNullable().defaultTo(false)
         table.boolean('done').notNullable().defaultTo(false)
         table.boolean('late').notNullable().defaultTo(false)
