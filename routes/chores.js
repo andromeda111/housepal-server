@@ -100,7 +100,7 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
                         }
 
                         obj.currentAssigned.index = nextCycle
-                        obj.currentAssigned.uid = obj.cycle[nextCycle];
+                        obj.currentAssigned.uid = obj.cycle[nextCycle].uid;
                         obj.currentAssigned.name = users.find(user => (user.uid === obj.currentAssigned.uid)).name;
 
                         console.log('current assigned UID: ', obj.currentAssigned.uid);
@@ -122,7 +122,7 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
                         }
 
                         obj.upcoming.index = upcomingCycle
-                        obj.upcoming.uid = obj.cycle[upcomingCycle]
+                        obj.upcoming.uid = obj.cycle[upcomingCycle].uid
                         obj.upcoming.name = users.find(user => (user.uid === obj.upcoming.uid)).name
 
 
