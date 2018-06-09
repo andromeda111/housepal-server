@@ -9,7 +9,7 @@ exports.seed = function (knex, Promise) {
                     title: 'Clean Kitchen Counters, Sink',
                     daysDue: JSON.stringify([0, 3]),
                     currentDueDay: { date: '2018-05-09', index: 1 },
-                    cycle: JSON.stringify(['UTxHlglXk1VknBg7oTOE6leusU12']),
+                    cycle: JSON.stringify([ { uid: 'UTxHlglXk1VknBg7oTOE6leusU12', name: 'John' } ]),
                     currentAssigned: { uid: 'UTxHlglXk1VknBg7oTOE6leusU12', name: 'John', index: 0 },
                     upcoming: JSON.stringify({}),
                     dueToday: false,
@@ -22,7 +22,11 @@ exports.seed = function (knex, Promise) {
                     title: 'Dust and tidy',
                     daysDue: JSON.stringify([2, 6]),
                     currentDueDay: { date: "2018-05-08", index: 0 },
-                    cycle: JSON.stringify(['zwZfygLIMugO3xKrhRloTJtHvQm2', '1FOSEK8IOYZsNDwsVCE6pkyMiPC3', 'UTxHlglXk1VknBg7oTOE6leusU12']),
+                    cycle: JSON.stringify([ 
+                        { uid: 'zwZfygLIMugO3xKrhRloTJtHvQm2', name: 'Cassa' },
+                        { uid: '1FOSEK8IOYZsNDwsVCE6pkyMiPC3', name: 'Lindsey' },
+                        { uid: 'UTxHlglXk1VknBg7oTOE6leusU12', name: 'John' } 
+                    ]),
                     currentAssigned: { uid: '1FOSEK8IOYZsNDwsVCE6pkyMiPC3', name: 'Lindsey', index: 1 },
                     upcoming: JSON.stringify({ index: 2, uid: 'UTxHlglXk1VknBg7oTOE6leusU12', name: 'John' }),
                     done: false,
