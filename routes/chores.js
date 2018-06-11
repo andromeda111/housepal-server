@@ -187,4 +187,24 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
     })
 });
 
+router.put('/edit-chore/:id', checkAuthorization, function (req, res, next) {
+    let decodedToken = req.locals.decodedToken;
+    let uid = decodedToken.uid;
+    let editedChore = req.body
+    let choreId = req.params.id
+
+    db('users_chores').where({ chore_id: choreId }).del().then(()=> {
+        db('chores').where({ id: choreId }).update(editedChore).returning('*').then(updatedChore => {
+            updatedChore[0].cycle.forEach(user => {
+                console.log('cycle.forEach user', user);
+                
+                db('users_chores').insert({user_uid: user.uid, chore_id: updatedChore[0].id}).then(() => {
+                    console.log('posted to join');
+                    res.json(updatedChore);
+                })
+            })
+        })
+    })
+  });
+
 module.exports = router;
