@@ -6,7 +6,7 @@ exports.seed = function(knex, Promise) {
       return knex('users_chores').insert([
         {
           id: 1,
-          user_uid: '2UTxHlglXk1VknBg7oTOE6leusU12',
+          user_uid: 'UTxHlglXk1VknBg7oTOE6leusU12',
           chore_id: 1
         },
         {
