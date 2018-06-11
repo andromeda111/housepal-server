@@ -198,7 +198,7 @@ router.put('/edit-chore/:id', checkAuthorization, function (req, res, next) {
             updatedChore[0].cycle.forEach(user => {
                 console.log('cycle.forEach user', user);
                 
-                db('users_chores').insert({user_uid: user.uid, chore_id: updatedChore[0].id}).then(() => {
+                db('users_chores').insert({user_id: user.id, chore_id: updatedChore[0].id}).then(() => {
                     console.log('posted to join');
                     res.json(updatedChore);
                 })

@@ -6,22 +6,22 @@ exports.seed = function(knex, Promise) {
       return knex('users_chores').insert([
         {
           id: 1,
-          user_uid: 'UTxHlglXk1VknBg7oTOE6leusU12',
+          user_id: 1,
           chore_id: 1
         },
         {
           id: 2,
-          user_uid: 'zwZfygLIMugO3xKrhRloTJtHvQm2',
+          user_id: 3,
           chore_id: 2
         },
         {
           id: 3,
-          user_uid: '1FOSEK8IOYZsNDwsVCE6pkyMiPC3',
+          user_id: 4,
           chore_id: 2
         },
         {
           id: 4,
-          user_uid: 'UTxHlglXk1VknBg7oTOE6leusU12',
+          user_id: 1,
           chore_id: 2
         },
       ]);
