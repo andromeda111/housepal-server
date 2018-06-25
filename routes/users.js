@@ -17,6 +17,7 @@ router.get('/current', checkAuthorization, function (req, res, next) {
                     name: result[0].name,
                     email: result[0].email,
                     houseID: result[0].house_id,
+                    profileImgUrl: result[0].profile_img_url,
                     deviceID: result[0].device_id
                 };
                 res.status(200).json(user);
@@ -36,7 +37,7 @@ router.get('/roommates/:house_id', checkAuthorization, function (req, res, next)
     let uid = decodedToken.uid;
     let houseID = req.params.house_id;
 
-    db('users').select('uid', 'name', 'house_id as houseID')
+    db('users').select('uid', 'name', 'profile_img_url as profileImgUrl', 'house_id as houseID')
         .where({ house_id: houseID })
         .whereNot({ uid })
         .then(roommates => {
@@ -70,7 +71,7 @@ router.post('/remove-roommate', checkAuthorization, function (req, res, next) {
                         });
                     }
                 });
-                db('users').select('uid', 'name', 'house_id as houseID')
+                db('users').select('uid', 'name', 'profile_img_url as profileImgUrl', 'house_id as houseID')
                     .where({ house_id: roommate.houseID })
                     .whereNot({ uid })
                     .then(roommates => {
@@ -111,11 +112,28 @@ router.post('/leave', checkAuthorization, function (req, res, next) {
         })
         res.status(200).json({ msg: 'success!!' });
     })
-    .catch(err => {
-        console.error('ERROR: ', err);
-        const message = 'There was an error leaving the house. Please sign out and try again.';
-        res.status(400).json({ message });
-    })
+        .catch(err => {
+            console.error('ERROR: ', err);
+            const message = 'There was an error leaving the house. Please sign out and try again.';
+            res.status(400).json({ message });
+        })
+});
+
+// Post Profile Image Url
+router.post('/images', checkAuthorization, function (req, res, next) {
+    let decodedToken = req.locals.decodedToken;
+    let uid = decodedToken.uid;
+    let imgUrl = req.body.imgUrl;
+
+    db('users').update({ profile_img_url: imgUrl }).where({ uid })
+        .then(() => {
+            res.status(200).json({ msg: 'success!!' });
+        })
+        .catch(err => {
+            console.error('ERROR: ', err);
+            const message = 'There was an error posting the image. Please try again.';
+            res.status(400).json({ message });
+        })
 });
 
 // Sign In
@@ -132,6 +150,7 @@ router.post('/signin', function (req, res, next) {
                     name: result[0].name,
                     email: result[0].email,
                     houseID: result[0].house_id,
+                    profileImgUrl: result[0].profile_img_url,
                     deviceID: result[0].device_id
                 };
 
@@ -176,7 +195,8 @@ router.post('/signup', async function (req, res, next) {
                     name: result[0].name,
                     email: result[0].email,
                     houseID: result[0].house_id,
-                    deviceID: result[0].device_id
+                    deviceID: result[0].device_id,
+                    profileImgUrl: result[0].profile_img_url,
                 };
 
                 res.status(200).json({ success: true, msg: 'Successful created new user: ', user });
