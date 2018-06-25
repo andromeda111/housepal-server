@@ -13,156 +13,91 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
         db('chores').where({ house_id: 1 }).then(result => {
 
             allChores = result
-
+            const today = moment().utc();
+            // PROBLEM: Chore does not remain "Done" until orignal duedate has passed.
+            // Check if Chore is Done, and update/cycle
+            // TODO: Chore is "Done" if completed more than 24 hours before the UTC 0000 due date. Otherwise, jump to next due date.
             allChores.forEach(obj => {
-                console.log('init current due idx: ', obj.currentDueDay.index);
-                console.log(obj.daysDue[obj.currentDueDay.index + 1]);
-                console.log('IN OBJ');
 
-                // PROBLEM: Chore does not remain "Done" until orignal duedate has passed.
-                // Check if Chore is Done, and update/cycle
-                // Get next index of daysDue
+                // If a chore is marked as Done.
                 if (obj.done) {
-                    let nextDueIdx = 0
-                    console.log('DAYS DUE LENGTH ', obj.daysDue.length);
-                    // Get the Index of the next due day
-                    if (obj.daysDue.length > 1) {
-                        console.log('checking next idx');
-                        if (!obj.daysDue[obj.currentDueDay.index + 1]) {
-                            console.log('idx reset');
-                            nextDueIdx = 0
-                        } else {
-                            console.log('idx +1');
-                            nextDueIdx = obj.currentDueDay.index + 1
-                        }
+                    // If we're at the end of the array, jump back to the zero index. Otherwise, increase by one.
+                    let nextDaysDueIndex = 0
+
+                    if (obj.daysDue.length > 1 && obj.daysDue[obj.currentDueDay.index + 1]) {
+                        nextDaysDueIndex = obj.currentDueDay.index + 1
                     }
-                    // If Today is after the current Due Date
-                    console.log('is today after the curr due date: ', moment(moment().add(0, 'day')).isAfter(obj.currentDueDay.date, 'day'));
 
-                    if (moment(moment().add(0, 'day')).isAfter(obj.currentDueDay.date, 'day')) {
-
+                    // If Done AND Today is AFTER the current Due Date...
+                    // Check if today is after the currentDueDay, minus 1 day.
+                    if (today.isAfter(moment(obj.currentDueDay.date).utc().subtract(1, 'days'))) {
+                        // ... The we need to cycle the due date to the next day in the cycle.
                         // CYLE DAYS
 
                         let nextDayDue;
-                        let nextDays;
-                        nextDays = obj.daysDue.filter(day => {
-                            // console.log('day in arr', moment(moment().add(0, 'day')).day(day,'day').format('YYYY-MM-DD'));
-                            let blah = moment(moment().add(0, 'day')).day(day, 'day').format('YYYY-MM-DD')
-                            if (moment(blah).isAfter(obj.currentDueDay.date, 'day') && moment(blah).isSame(moment(moment().add(0, 'day')), 'day') && !obj.late) {
-                                return true
-                            } else if (moment(blah).isAfter(obj.currentDueDay.date, 'day') && moment(blah).isAfter(moment(moment().add(0, 'day')), 'day')) {
-                                return true
+                        let nextAvailableDays;
+                        //!!!!!!!!!!!!!! PROBLEM!! I probably need to also check here that it's not the same day as the current exisiting due day
+                        // Find the next available days that the chore can be assigned to in this week, if any exists...
+                        nextAvailableDays = obj.daysDue.filter(day => { // I think this this can be a find. !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                            // console.log('day in arr', moment(today).day(day,'day').format('YYYY-MM-DD'));
+                            let dayInDaysDueArray = today.day(day, 'day').format('YYYY-MM-DD') // This is the day of the current week of those daysDue values
+
+                            // If the day is After the current due date...
+                            if (moment(dayInDaysDueArray).isAfter(obj.currentDueDay.date, 'day')) {
+                                // ... And is the SAME OR is AFTER Today
+                                if (moment(dayInDaysDueArray).isSame(today, 'day') || moment(dayInDaysDueArray).isAfter(today, 'day')) {
+                                    return true
+                                }
                             }
                         })
 
-                        console.log('nextDays after set: ', nextDays);
-
-
-                        if (nextDays.length > 0) {
-                            nextDayDue = moment().add(0, 'day').day(nextDays[0], 'day')
+                        // ... If there are days available, set the nextDayDue value to then next day available
+                        if (nextAvailableDays.length > 0) {
+                            nextDayDue = today.day(nextAvailableDays[0], 'day');
                         } else {
-                            console.log('check: ', moment(moment().add(0, 'day')).isAfter(moment(moment().add(0, 'day')).day(obj.daysDue[0], 'day')));
-                            if (moment(moment().add(0, 'day')).isAfter(moment(moment().add(0, 'day')).day(obj.daysDue[0], 'day'))) {
-                                nextDayDue = moment(moment().add(0, 'day')).add(1, 'weeks').day(obj.daysDue[0], 'day');
+                            // Otherwise, if Today is AFTER the day of the week of the (only) daysDue value, add one week.
+                            if (today.isAfter(today.day(obj.daysDue[0], 'day'))) {
+                                nextDayDue = today.add(1, 'weeks').day(obj.daysDue[0], 'day');
                             } else {
-                                nextDayDue = moment().add(0, 'day').day(obj.daysDue[0], 'day')
-
+                                // ... Otherwise, just keep it as it is/was, ... !! Check this - I don't think it'll ever hit?
+                                nextDayDue = today.day(obj.daysDue[0], 'day')
                             }
                         }
 
-
                         obj.currentDueDay.date = nextDayDue.format("YYYY-MM-DD")
-                        obj.currentDueDay.index = nextDueIdx
+                        obj.currentDueDay.index = nextDaysDueIndex
 
-                        // If today is After the current due date:
-                        if (moment(moment().add(0, 'day')).isAfter(obj.currentDueDay.date, 'day')) {
-                            console.log('today is after the due date');
-                        } else {
-                            obj.dueToday = false
-                        }
-
-                        obj.late = false
                         obj.done = false
 
                         // CYCLE HOUSEMATES
                         let nextCycle = 0
-                        console.log('cycle length: ', obj.cycle.length);
-                        // Get the Index of the next due day
-                        if (obj.cycle.length > 1) {
-                            console.log('checking next cycle idx');
-                            if (!obj.cycle[obj.currentAssigned.index + 1]) {
-                                console.log('idx reset');
-                                nextCycle = 0
-                            } else {
-                                console.log('idx +1');
-                                nextCycle = obj.currentAssigned.index + 1
-                            }
+
+                        // If there are multiple people in the cycle, and we're not at the end of the array, increase the upcoming index by one.
+                        if (obj.cycle.length > 1 && obj.cycle[obj.currentAssigned.index + 1]) {
+                            nextCycle = obj.currentAssigned.index + 1;
                         }
 
                         obj.currentAssigned.index = nextCycle
                         obj.currentAssigned.uid = obj.cycle[nextCycle].uid;
                         obj.currentAssigned.name = users.find(user => (user.uid === obj.currentAssigned.uid)).name;
 
-                        console.log('current assigned UID: ', obj.currentAssigned.uid);
-                        console.log('current assigned name: ', obj.currentAssigned.name);
-
                         // CYCLE UPCOMING
                         let upcomingCycle = 0
-                        console.log('cycle length: ', obj.cycle.length);
+
                         // Get the Index of the next due day
-                        if (obj.cycle.length > 1) {
-                            console.log('checking next cycle idx');
-                            if (!obj.cycle[obj.currentAssigned.index + 1]) {
-                                console.log('idx reset');
-                                upcomingCycle = 0
-                            } else {
-                                console.log('idx +1');
-                                upcomingCycle = obj.currentAssigned.index + 1
-                            }
+                        if (obj.cycle.length > 1 && obj.cycle[obj.currentAssigned.index + 1]) {
+                            upcomingCycle = obj.currentAssigned.index + 1;
                         }
 
                         obj.upcoming.index = upcomingCycle
                         obj.upcoming.uid = obj.cycle[upcomingCycle].uid
                         obj.upcoming.name = users.find(user => (user.uid === obj.upcoming.uid)).name
-
-
-                        // Set upcoming cycle array
-                        // if (obj.cycle.length > 1) {
-                        //     let pre = obj.cycle.slice(0, obj.currentAssigned.index);
-                        //     let post = obj.cycle.slice(obj.currentAssigned.index + 1);
-                        //     let upcoming = post.concat(pre);
-                        //     obj.upcoming = upcoming.map(uid => {
-                        //         let name = users.find(user => (user.uid === uid)).name;
-                        //         return { uid, name };
-                        //     })
-                        // }
-                        console.log('upcoming', obj.upcoming);
-
                     }
-                    console.log('END of DONE currentDueDay: ', obj.currentDueDay.date);
                 }
 
                 // Once done is false
                 console.log('Current Due Day: ', obj.currentDueDay.date);
-                let currDay = moment().add(0, 'day').format('YYYY-MM-DD')
-                if (obj.dueToday === false && obj.late === false) {
-                    console.log('Not due today, and not late');
-                    console.log(obj.currentDueDay.date);
-                    console.log(currDay);
-                    let result;
-                    if (moment(currDay).isSame(obj.currentDueDay.date, 'day')) {
-                        // console.log(moment().day(obj.currentDueDay.date, 'day'));
-                        console.log('same day');
-                        obj.dueToday = true
-                    }
-                    if (moment(currDay).isAfter(obj.currentDueDay.date, 'day')) {
-                        obj.dueToday = true
-                        obj.late = true
-                    }
-                }
-                if (obj.dueToday === true && moment(currDay).isAfter(obj.currentDueDay.date, 'day')) {
-                    obj.late = true
-                }
+                let currDay = today.format('YYYY-MM-DD')
 
                 // Stringify daysDue, cycle, and upcoming for postgres
                 obj.daysDue = JSON.stringify(obj.daysDue)
