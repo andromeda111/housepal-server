@@ -17,8 +17,9 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
             // Check if Chore is Done, and update/cycle
             // TODO: Chore is "Done" if completed more than 24 hours before the UTC 0000 due date. Otherwise, jump to next due date.
             allChores.forEach(obj => {
-                const today = moment().utc();
-                console.log('init today: ', today);
+                console.log('non-utc', moment())
+                console.log('utc', moment().utc());
+                
                 
                 // If a chore is marked as Done.
                 if (obj.done) {
@@ -30,7 +31,7 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
                     }
 
                     // If Done AND Today is AFTER the current Due Date (or within 24 hours prior)...
-                    if (today.isAfter(moment(obj.currentDueDay.date).utc().subtract(1, 'days'))) {
+                    if (moment().utc().isAfter(moment(obj.currentDueDay.date).utc().subtract(1, 'days'))) {
                         // ... The we need to cycle the due date to the next day in the cycle.
                         // CYLE DAYS
 
@@ -40,7 +41,7 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
                         // Find the next available days that the chore can be assigned to in this week, if any exists...
                         nextAvailableDays = obj.daysDue.filter(day => { // I think this this can be a find. !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-                            const dayInDaysDueArray = today.day(day, 'day').format('YYYY-MM-DD') // This is the day of the current week of those daysDue values
+                            const dayInDaysDueArray = moment().utc().day(day, 'day').format('YYYY-MM-DD') // This is the day of the current week of those daysDue values
                             console.log('dayInDaysDueArray: ', dayInDaysDueArray);
                             
 
@@ -50,7 +51,7 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
                                 // !!!!!!! Check if we can get rid of isSame here...
                                 console.log('first if');
                                 
-                                if (moment(dayInDaysDueArray).isSame(today, 'day') || moment(dayInDaysDueArray).isAfter(today, 'day')) {
+                                if (moment(dayInDaysDueArray).isSame(moment().utc(), 'day') || moment(dayInDaysDueArray).isAfter(moment().utc(), 'day')) {
                                     console.log('returntrue');
                                     
                                     return true
@@ -58,26 +59,26 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
                             }
                         })
                         console.log('!!!!!!!!!!! Next available days: ', nextAvailableDays);
-                        console.log('halfway today', today);
+                        console.log('halfway today', moment().utc());
                         
                         // ... If there are days available, set the nextDayDue value to then next day available
                         if (nextAvailableDays.length > 0) {
-                            nextDayDue = today.day(nextAvailableDays[0], 'day');
+                            nextDayDue = moment().utc().day(nextAvailableDays[0], 'day');
                         } else {
                             // Otherwise, if Today is AFTER the day of the week of the (only) daysDue value, add one week.
-                            console.log('!?!?!?!', today.day(obj.daysDue[0], 'day'));
+                            console.log('!?!?!?!', moment().utc().day(obj.daysDue[0], 'day'));
                             
-                            console.log('???????', today.isAfter(today.day(obj.daysDue[0], 'day')));
-                            console.log('today: ', today);
+                            console.log('???????', moment().utc().isAfter(moment().utc().day(obj.daysDue[0], 'day')));
+                            console.log('today: ', moment().utc());
                             
-                            if (today.isAfter(today.day(obj.daysDue[0], 'day'))) {
-                                console.log('OTHERWISE: ', today.isAfter(today.day(obj.daysDue[0], 'day')));
-                                nextDayDue = today.add(1, 'weeks').day(obj.daysDue[0], 'day');
+                            if (moment().utc().isAfter(moment().utc().day(obj.daysDue[0], 'day'))) {
+                                console.log('OTHERWISE: ', moment().utc().isAfter(moment().utc().day(obj.daysDue[0], 'day')));
+                                nextDayDue = moment().utc().add(1, 'weeks').day(obj.daysDue[0], 'day');
                                 console.log('... ', nextDayDue);
                                 
                             } else {
                                 // ... Otherwise, just keep it as it is/was, ... !! Check this - I don't think it'll ever hit?
-                                nextDayDue = today.day(obj.daysDue[0], 'day')
+                                nextDayDue = moment().utc().day(obj.daysDue[0], 'day')
                                 console.log('else: ', nextDayDue);
                                 
                             }
