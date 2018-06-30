@@ -18,7 +18,7 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
             // TODO: Chore is "Done" if completed more than 24 hours before the UTC 0000 due date. Otherwise, jump to next due date.
             allChores.forEach(obj => {
                 console.log('non-utc', moment())
-                console.log('utc', moment().utc());
+                console.log('utc', moment().hour(0));
                 
                 
                 // If a chore is marked as Done.
@@ -29,9 +29,12 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
                     if (obj.daysDue.length > 1 && obj.daysDue[obj.currentDueDay.index + 1]) {
                         nextDaysDueIndex = obj.currentDueDay.index + 1
                     }
-
+                    console.log('Due day - one day: ', moment(obj.currentDueDay.date).utc().hour(0).subtract(1, 'days'));
+                    
                     // If Done AND Today is AFTER the current Due Date (or within 24 hours prior)...
-                    if (moment().utc().isAfter(moment(obj.currentDueDay.date).utc().subtract(1, 'days'))) {
+                    if (moment().utc().isAfter(moment(obj.currentDueDay.date).utc().hour(0).subtract(1, 'days'))) {
+                        console.log('done and after');
+                        
                         // ... The we need to cycle the due date to the next day in the cycle.
                         // CYLE DAYS
 
