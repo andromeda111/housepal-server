@@ -28,23 +28,23 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
                         nextDaysDueIndex = obj.currentDueDay.index + 1
                     }
 
-                    // If Done AND Today is AFTER the current Due Date...
-                    // Check if today is after the currentDueDay, minus 1 day.
+                    // If Done AND Today is AFTER the current Due Date (or within 24 hours prior)...
                     if (today.isAfter(moment(obj.currentDueDay.date).utc().subtract(1, 'days'))) {
                         // ... The we need to cycle the due date to the next day in the cycle.
                         // CYLE DAYS
 
                         let nextDayDue;
                         let nextAvailableDays;
-                        //!!!!!!!!!!!!!! PROBLEM!! I probably need to also check here that it's not the same day as the current exisiting due day
+                        //!!!!!!!!!!!!!! PROBLEM!! I probably need to also check here that it's not the same day as the current exisiting due day ???
                         // Find the next available days that the chore can be assigned to in this week, if any exists...
                         nextAvailableDays = obj.daysDue.filter(day => { // I think this this can be a find. !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                            // console.log('day in arr', moment(today).day(day,'day').format('YYYY-MM-DD'));
-                            let dayInDaysDueArray = today.day(day, 'day').format('YYYY-MM-DD') // This is the day of the current week of those daysDue values
+
+                            const dayInDaysDueArray = today.day(day, 'day').format('YYYY-MM-DD') // This is the day of the current week of those daysDue values
 
                             // If the day is After the current due date...
                             if (moment(dayInDaysDueArray).isAfter(obj.currentDueDay.date, 'day')) {
                                 // ... And is the SAME OR is AFTER Today
+                                // !!!!!!! Check if we can get rid of isSame here...
                                 if (moment(dayInDaysDueArray).isSame(today, 'day') || moment(dayInDaysDueArray).isAfter(today, 'day')) {
                                     return true
                                 }
