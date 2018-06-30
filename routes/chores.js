@@ -13,12 +13,13 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
         db('chores').where({ house_id: 1 }).then(result => {
 
             allChores = result
-            const today = moment().utc();
             // PROBLEM: Chore does not remain "Done" until orignal duedate has passed.
             // Check if Chore is Done, and update/cycle
             // TODO: Chore is "Done" if completed more than 24 hours before the UTC 0000 due date. Otherwise, jump to next due date.
             allChores.forEach(obj => {
-
+                const today = moment().utc();
+                console.log('init today: ', today);
+                
                 // If a chore is marked as Done.
                 if (obj.done) {
                     // If we're at the end of the array, jump back to the zero index. Otherwise, increase by one.
@@ -57,6 +58,7 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
                             }
                         })
                         console.log('!!!!!!!!!!! Next available days: ', nextAvailableDays);
+                        console.log('halfway today', today);
                         
                         // ... If there are days available, set the nextDayDue value to then next day available
                         if (nextAvailableDays.length > 0) {
@@ -114,7 +116,6 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
 
                 // Once done is false
                 console.log('Current Due Day: ', obj.currentDueDay.date);
-                let currDay = today.format('YYYY-MM-DD')
 
                 // Stringify daysDue, cycle, and upcoming for postgres
                 obj.daysDue = JSON.stringify(obj.daysDue)
