@@ -40,17 +40,24 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
                         nextAvailableDays = obj.daysDue.filter(day => { // I think this this can be a find. !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
                             const dayInDaysDueArray = today.day(day, 'day').format('YYYY-MM-DD') // This is the day of the current week of those daysDue values
+                            console.log('dayInDaysDueArray: ', dayInDaysDueArray);
+                            
 
                             // If the day is After the current due date...
                             if (moment(dayInDaysDueArray).isAfter(obj.currentDueDay.date, 'day')) {
                                 // ... And is the SAME OR is AFTER Today
                                 // !!!!!!! Check if we can get rid of isSame here...
+                                console.log('first if');
+                                
                                 if (moment(dayInDaysDueArray).isSame(today, 'day') || moment(dayInDaysDueArray).isAfter(today, 'day')) {
+                                    console.log('returntrue');
+                                    
                                     return true
                                 }
                             }
                         })
-
+                        console.log('!!!!!!!!!!! Next available days: ', nextAvailableDays);
+                        
                         // ... If there are days available, set the nextDayDue value to then next day available
                         if (nextAvailableDays.length > 0) {
                             nextDayDue = today.day(nextAvailableDays[0], 'day');
