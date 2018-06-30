@@ -66,6 +66,7 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
                             console.log('!?!?!?!', today.day(obj.daysDue[0], 'day'));
                             
                             console.log('???????', today.isAfter(today.day(obj.daysDue[0], 'day')));
+                            console.log('today: ', today);
                             
                             if (today.isAfter(today.day(obj.daysDue[0], 'day'))) {
                                 console.log('OTHERWISE: ', today.isAfter(today.day(obj.daysDue[0], 'day')));
