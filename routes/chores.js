@@ -122,6 +122,16 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
     })
 });
 
+router.put('/done/:id', checkAuthorization, function (req, res, next) {
+    let decodedToken = req.locals.decodedToken;
+    let uid = decodedToken.uid;
+    let choreId = req.params.id
+
+    db('chores').where({ id: choreId }).update({ done: true }).returning('*').then(updatedChore => {
+        res.json(updatedChore);
+    });
+});
+
 router.put('/edit-chore/:id', checkAuthorization, function (req, res, next) {
     let decodedToken = req.locals.decodedToken;
     let uid = decodedToken.uid;
@@ -140,6 +150,6 @@ router.put('/edit-chore/:id', checkAuthorization, function (req, res, next) {
             })
         })
     })
-  });
+});
 
 module.exports = router;
