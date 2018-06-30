@@ -57,10 +57,15 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
                         } else {
                             // Otherwise, if Today is AFTER the day of the week of the (only) daysDue value, add one week.
                             if (today.isAfter(today.day(obj.daysDue[0], 'day'))) {
+                                console.log('OTHERWISE: ', today.isAfter(today.day(obj.daysDue[0], 'day')));
                                 nextDayDue = today.add(1, 'weeks').day(obj.daysDue[0], 'day');
+                                console.log('... ', nextDayDue);
+                                
                             } else {
                                 // ... Otherwise, just keep it as it is/was, ... !! Check this - I don't think it'll ever hit?
                                 nextDayDue = today.day(obj.daysDue[0], 'day')
+                                console.log('else: ', nextDayDue);
+                                
                             }
                         }
 
