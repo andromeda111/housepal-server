@@ -60,7 +60,7 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
                 }
 
                 // Set currentDueDay to updated values:
-                obj.currentDueDay.daysDueIndex = nextAvailableDayIndex || 0;
+                obj.currentDueDay.daysDueIndex = obj.daysDue.indexOf(nextAvailableDayIndex) > 0 ? obj.daysDue.indexOf(nextAvailableDayIndex) : 0;
                 obj.currentDueDay.date = nextDayDue.format("YYYY-MM-DD");
 
                 // CYCLE HOUSEMATES & UPCOMING
