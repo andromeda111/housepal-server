@@ -21,70 +21,69 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
             console.log('utc', moment().hour(0));
             
             // If a chore is marked as Done AND Today is AFTER the current Due Date (or within 24 hours prior)...
+            console.log('Due day - one day: ', moment(obj.currentDueDay.date).utc().hour(0).subtract(1, 'days'));
             if (obj.done && moment().utc().isAfter(moment(obj.currentDueDay.date).utc().hour(0).subtract(1, 'days'))) {
                 console.log('!! Chore is done and after currentDueDay');
-                // CYCLE DAYS... The we need to cycle the due date to the next day in the cycle.
 
                 // UPDATE the daysDueIndex. If we're at the end of the array, jump back to the zero index. Otherwise, increase by one.
-                // if (obj.daysDue.length === 1) {
-                //     obj.currentDueDay.daysDueIndex = 0 // Doesn't change
-                //     // date increases by 1 week...
+                const nextDaysDueIndex = obj.currentDueDay.daysDueIndex + 1;
+                obj.currentDueDay.daysDueIndex = obj.daysDue[nextDaysDueIndex] ? nextDayDueIndex : 0;
 
-                // }
+                // CYCLE DAYS... The we need to cycle the due date to the next day in the cycle.
+                let nextDayDue;   
 
-                let nextDaysDueIndex = 0
-                if (obj.daysDue.length > 1 && obj.daysDue[obj.currentDueDay.daysDueIndex + 1]) {
-                    nextDaysDueIndex = obj.currentDueDay.daysDueIndex + 1
-                } 
-                console.log('Due day - one day: ', moment(obj.currentDueDay.date).utc().hour(0).subtract(1, 'days'));
-                obj.currentDueDay.daysDueIndex = nextDaysDueIndex
-            
-                // Find the next available day (return index of daysDue array) that the chore can be assigned to in this week, if any exists...
-                const nextAvailableDayIndex = obj.daysDue.find(day => {
-                    const dayInDaysDueArray = moment().utc().day(day, 'day').format('YYYY-MM-DD') // This is the day of the current week of those daysDue values
-                    
-                    // Is the day we're checking After both the currentDueDay AND today -- then return true
-                    if (moment(dayInDaysDueArray).isAfter(obj.currentDueDay.date, 'day') && moment(dayInDaysDueArray).isAfter(moment().utc(), 'day')) {
-                        return true;
-                    }
-                })
-                console.log('!!!!!!!!!!! Next available day: ', nextAvailableDayIndex);
-                
-                // ... If there are days available, set the nextDayDue value to then next day available
-                let nextDayDue;
-                
-                if (nextAvailableDayIndex) {
-                    nextDayDue = moment().utc().day(nextAvailableDayIndex, 'day');
-                } else {
-                    // Otherwise, we need to restart the cycle.
+                if (obj.daysDue.length === 1) {
                     // ... If Today is AFTER the day of the week of the (first or only) daysDue value - based on the CURRENT week               
                     if (moment().utc().isAfter(moment().utc().day(obj.daysDue[0], 'day'))) {
-                        console.log('OTHERWISE: ', moment().utc().isAfter(moment().utc().day(obj.daysDue[0], 'day')));                        
-                        // EDGE CASE: Sat>Sun within 24hrs: If Today is the SAME day as the current due date > then bump up to next time (either index +1 or 2 weeks later)
-                        if (moment().utc().isSame(moment().utc().day(obj.daysDue[0], 'day'), 'day')) {
-                            if (obj.daysDue[1]) {
-                                nextDayDue = moment().utc().add(1, 'weeks').day(obj.daysDue[1], 'day'); // Next available day in the next week.
-                                console.log('EDGE CASE IF', nextDayDue);
-                            } else {
-                                nextDayDue = moment().utc().add(2, 'weeks').day(obj.daysDue[0], 'day'); // Skip extra week.
-                                console.log('EDGE CASE ELSE', nextDayDue);                                
-                            }
-                        } else {
-                            // NORMAL CASES: just bump up one week
-                            nextDayDue = moment().utc().add(1, 'weeks').day(obj.daysDue[0], 'day');
-                            console.log('NORMAL CASE ', nextDayDue);     
-                        }                   
+                        // date increases by 1 week...
+                        nextDayDue = moment().utc().add(1, 'weeks').day(obj.daysDue[0], 'day');
+                        console.log('Single User NORMAL CASE ', nextDayDue);     
                     } else {
                         // ELSE... Keep as-is, the first day due is after today
                         nextDayDue = moment().utc().day(obj.daysDue[0], 'day')
                         console.log('main nextDayDue else: ', nextDayDue);
                     }
+
+                    obj.currentDueDay.date = nextDayDue.format("YYYY-MM-DD")
+
+                } else if (obj.daysDue.length > 1) {
+                    // Find the next available day (return index of daysDue array) that the chore can be assigned to in this week, if any exists...
+                    const nextAvailableDayIndex = obj.daysDue.find(day => {
+                        const dayInDaysDueArray = moment().utc().day(day, 'day').format('YYYY-MM-DD') // This is the day of the current week of those daysDue values
+                        
+                        // Is the day we're checking After both the currentDueDay AND today -- then return true
+                        if (moment(dayInDaysDueArray).isAfter(obj.currentDueDay.date, 'day') && moment(dayInDaysDueArray).isAfter(moment().utc(), 'day')) {
+                            return true;
+                        }
+                    })
+                    console.log('!!!!!!!!!!! Next available day: ', nextAvailableDayIndex);
+               
+                     // ... If there is an available day, set the nextDayDue value to it
+                    if (nextAvailableDayIndex !== undefined) {
+                        nextDayDue = moment().utc().day(nextAvailableDayIndex, 'day');
+                    } else {
+                        // Otherwise, we need to restart the cycle.
+                        // ... If Today is AFTER the day of the week of the (first or only) daysDue value - based on the CURRENT week               
+                        if (moment().utc().isAfter(moment().utc().day(obj.daysDue[0], 'day'))) {
+                            console.log('OTHERWISE: ', moment().utc().isAfter(moment().utc().day(obj.daysDue[0], 'day')));                        
+                            // EDGE CASE: Sat>Sun within 24hrs: If Today is the SAME day as the current due date > then bump up to next time (either index +1 or 2 weeks later)
+                            if (moment().utc().isSame(moment().utc().day(obj.daysDue[0], 'day'), 'day')) { // !!!!!!!!!!!!!1TEST THIS!!!!!!!!!!!! Will this never hit???
+                                nextDayDue = moment().utc().add(1, 'weeks').day(obj.daysDue[1], 'day'); // Next available day in the next week.
+                                console.log('EDGE CASE IF', nextDayDue);
+                            } else {
+                                // NORMAL CASES: just bump up one week
+                                nextDayDue = moment().utc().add(1, 'weeks').day(obj.daysDue[0], 'day');
+                                console.log('NORMAL CASE ', nextDayDue);     
+                            }                   
+                        } else {
+                            // ELSE... Keep as-is, the first day due is after today
+                            nextDayDue = moment().utc().day(obj.daysDue[0], 'day')
+                            console.log('main nextDayDue else: ', nextDayDue);
+                        }
+                    }
+
+                    obj.currentDueDay.date = nextDayDue.format("YYYY-MM-DD")
                 }
-
-                obj.currentDueDay.date = nextDayDue.format("YYYY-MM-DD")
-                
-
-                obj.done = false
 
                 // CYCLE HOUSEMATES & UPCOMING
                 // If there are multiple people in the cycle, AND we're not at the end of the array...                    
@@ -96,10 +95,13 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
                     obj.currentAssigned = nextUserInCycle || obj.cycle[0];
                     obj.upcoming = upcomingUserInCycle || obj.cycle[0];
                 }
+
+                // Set Done back to false
+                obj.done = false;
             }
 
             // Once done is false
-            console.log('Current Due Day: ', obj.currentDueDay.date);
+            console.log('Current Due Day: ', obj.currentDueDay.date, 'index:', obj.currentDueDay.daysDueIndex);
 
             // Stringify Arrays: daysDue, cycle, for postgres
             obj.daysDue = JSON.stringify(obj.daysDue)
