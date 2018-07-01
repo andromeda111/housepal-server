@@ -11,11 +11,7 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
     let allChores = [];
 
     db('chores').where({ house_id: 1 }).then(result => {
-
         allChores = result
-        // PROBLEM: Chore does not remain "Done" until orignal duedate has passed.
-        // Check if Chore is Done, and update/cycle
-        // TODO: Chore is "Done" if completed more than 24 hours before the UTC 0000 due date. Otherwise, jump to next due date.
         allChores.forEach(obj => {
             // If a chore is marked as Done AND Today is AFTER the current Due Date (or within 24 hours prior)...
             if (obj.done && moment().utc().isAfter(moment(obj.currentDueDay.date).utc().hour(0).subtract(1, 'days'))) {
@@ -31,7 +27,10 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
                         return true;
                     }
                 })
-                console.log('!!!!!!!!!!! Next available day: ', nextAvailableDayIndex);
+
+                // Update daysDueIndex
+                const nextIndex = obj.daysDue.indexOf(nextAvailableDayIndex);
+                obj.currentDueDay.daysDueIndex = nextIndex > 0 ? nextIndex : 0;
 
                 let nextDayDue;   
                 // ... If there is an available day, set the nextDayDue value to it
@@ -44,7 +43,10 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
                     if (moment().utc().isAfter(moment().utc().day(obj.daysDue[0], 'day'))) {
                         console.log('OTHERWISE: ', moment().utc().isAfter(moment().utc().day(obj.daysDue[0], 'day')));                        
                         // EDGE CASE: Sat>Sun within 24hrs: If Today is the SAME day as the current due date > then bump up to next time (either index +1 or 2 weeks later)
-                        if (obj.daysDue.length > 1 && moment().utc().isSame(moment().utc().day(obj.daysDue[0], 'day'), 'day')) { // !!!!!!!!!!!!!1TEST THIS!!!!!!!!!!!! Will this never hit???
+                         // !!!!!!!!!!!!!1TEST THIS!!!!!!!!!!!! Will this never hit???
+                         // NOTE: I think this is for cases where it's done & after, and you're marking done/loading this ON the same day of the week as the due day
+                         /// ... but it still might never hit...?
+                        if (obj.daysDue.length > 1 && moment().utc().isSame(moment().utc().day(obj.daysDue[0], 'day'), 'day')) {
                             nextDayDue = moment().utc().add(1, 'weeks').day(obj.daysDue[1], 'day'); // Next available day in the next week.
                             console.log('EDGE CASE IF', nextDayDue);
                         } else {
@@ -59,8 +61,7 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
                     }
                 }
 
-                // Set currentDueDay to updated values:
-                obj.currentDueDay.daysDueIndex = obj.daysDue.indexOf(nextAvailableDayIndex) > 0 ? obj.daysDue.indexOf(nextAvailableDayIndex) : 0;
+                // Update currentDueDay Date
                 obj.currentDueDay.date = nextDayDue.format("YYYY-MM-DD");
 
                 // CYCLE HOUSEMATES & UPCOMING
@@ -86,20 +87,17 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
             obj.cycle = JSON.stringify(obj.cycle)
 
             db('chores').where({ id: obj.id }).update(obj).then((res) => {
-                console.log('end algorithm, post update', res);
+                console.log('end algorithm, posted update');
             }).catch(err => console.error('ERROR in end algorithm post:', err))
         })
 
-        console.log('after');
-        console.log(allChores);
+        console.log('after forEach: ', allChores);
 
         db('chores').where({ house_id: 1 }).then(result => {
-            console.log('DONE - ready to send JSON');
-            console.log(result);
+            console.log('DONE - ready to send JSON: ', result);
             res.json(result)
-        })
-
-    })
+        });
+    });
 });
 
 router.put('/done/:id', checkAuthorization, function (req, res, next) {
