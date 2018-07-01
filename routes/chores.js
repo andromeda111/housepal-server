@@ -34,32 +34,25 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
                 
                 // If Done AND Today is AFTER the current Due Date (or within 24 hours prior)...
                 if (moment().utc().isAfter(moment(obj.currentDueDay.date).utc().hour(0).subtract(1, 'days'))) {
-                    console.log('done and after');
-                    
-                    // ... The we need to cycle the due date to the next day in the cycle.
-                    // CYLE DAYS
+                    console.log('!! Chore is done and after currentDueDay');
+                    // CYCLE DAYS... The we need to cycle the due date to the next day in the cycle.
 
-                    let nextDayDue;
-                    let nextAvailableDays;
-                    //!!!!!!!!!!!!!! PROBLEM!! I probably need to also check here that it's not the same day as the current exisiting due day ???
-                    // Find the next available days that the chore can be assigned to in this week, if any exists...
-                    nextAvailableDays = obj.daysDue.filter(day => { // I think this this can be a find. !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
+                    // Find the next available day (return index of daysDue array) that the chore can be assigned to in this week, if any exists...
+                    const nextAvailableDayIndex = obj.daysDue.find(day => {
                         const dayInDaysDueArray = moment().utc().day(day, 'day').format('YYYY-MM-DD') // This is the day of the current week of those daysDue values
-                        console.log('dayInDaysDueArray: ', dayInDaysDueArray);
-                        
+                       
                         // Is the day we're checking After both the currentDueDay AND today -- then return true
                         if (moment(dayInDaysDueArray).isAfter(obj.currentDueDay.date, 'day') && moment(dayInDaysDueArray).isAfter(moment().utc(), 'day')) {
-                            console.log('In if: day checked is AFTER both the currentDueDay AND today');
                             return true;
                         }
                     })
-                    console.log('!!!!!!!!!!! Next available days: ', nextAvailableDays);
-                    console.log('halfway today', moment().utc());
+                    console.log('!!!!!!!!!!! Next available day: ', nextAvailableDayIndex);
                     
                     // ... If there are days available, set the nextDayDue value to then next day available
-                    if (nextAvailableDays.length > 0) {
-                        nextDayDue = moment().utc().day(nextAvailableDays[0], 'day');
+                    let nextDayDue;
+                    
+                    if (nextAvailableDayIndex) {
+                        nextDayDue = moment().utc().day(nextAvailableDayIndex, 'day');
                     } else {
                         // Otherwise, we need to restart the cycle.
                         // ... If Today is AFTER the day of the week of the (only) daysDue value - based on the CURRENT week, add one week.
