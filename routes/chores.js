@@ -59,9 +59,8 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
                     }
                 }
 
-                // UPDATE the daysDueIndex. 
-                const nextDaysDueIndex = obj.currentDueDay.daysDueIndex + 1; 
-                obj.currentDueDay.daysDueIndex = obj.daysDue[nextDaysDueIndex] ? nextDayDueIndex : 0; // Increase by 1 or reset to 0.
+                // Set currentDueDay to updated values:
+                obj.currentDueDay.daysDueIndex = nextAvailableDayIndex || 0;
                 obj.currentDueDay.date = nextDayDue.format("YYYY-MM-DD");
 
                 // CYCLE HOUSEMATES & UPCOMING
