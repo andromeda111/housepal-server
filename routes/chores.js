@@ -68,13 +68,19 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
                         if (nextAvailableDays.length > 0) {
                             nextDayDue = moment().utc().day(nextAvailableDays[0], 'day');
                         } else {
-                            // Otherwise, if Today is AFTER the day of the week of the (only) daysDue value, add one week.
+                            // Otherwise, we need to restart the cycle.
+                            // ... If Today is AFTER the day of the week of the (only) daysDue value - based on the CURRENT week, add one week.
                             console.log('!?!?!?!', moment().utc().day(obj.daysDue[0], 'day'));
                             
                             console.log('???????', moment().utc().isAfter(moment().utc().day(obj.daysDue[0], 'day')));
                             console.log('today: ', moment().utc());
                             
                             if (moment().utc().isAfter(moment().utc().day(obj.daysDue[0], 'day'))) {
+                                // If it is the SAME day as the current due date > then bump up to next time (either index +1 or 2 weeks later)
+                                if (moment().utc().isSame(moment().utc().day(obj.daysDue[0], 'day'), 'day')) {
+                                    nextDayDue = obj.daysDue[1] ? moment().utc().add(1, 'weeks').day(obj.daysDue[1], 'day') : moment().utc().add(2, 'weeks').day(obj.daysDue[0], 'day');
+                                }
+                                // Otherwise, just bump up one week
                                 console.log('OTHERWISE: ', moment().utc().isAfter(moment().utc().day(obj.daysDue[0], 'day')));
                                 nextDayDue = moment().utc().add(1, 'weeks').day(obj.daysDue[0], 'day');
                                 console.log('... ', nextDayDue);
