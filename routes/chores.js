@@ -68,10 +68,10 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
                 // If there are multiple people in the cycle, AND we're not at the end of the array...                    
                 if (obj.cycle.length > 1) {
                     // Cycle to next user in cycle, or back to start
-                    const nextUserInCycle = obj.cycle[obj.currentAssigned.index + 1];
+                    const nextUserInCycle = obj.cycle[obj.currentAssigned.index + 1] || obj.cycle[0];
                     const upcomingUserInCycle = obj.cycle[nextUserInCycle.index + 1];
 
-                    obj.currentAssigned = nextUserInCycle || obj.cycle[0];
+                    obj.currentAssigned = nextUserInCycle;
                     obj.upcoming = upcomingUserInCycle || obj.cycle[0];
                 }
 
