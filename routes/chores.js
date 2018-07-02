@@ -110,11 +110,11 @@ router.put('/done/:id', checkAuthorization, function (req, res, next) {
     });
 });
 
-router.put('/edit/:id', checkAuthorization, function (req, res, next) {
+router.put('/edit', checkAuthorization, function (req, res, next) {
     let decodedToken = req.locals.decodedToken;
     let uid = decodedToken.uid;
     let editedChore = req.body
-    let choreId = req.params.id
+    let choreId = editedChore.id;
     console.log('in route');
     
 
