@@ -110,11 +110,13 @@ router.put('/done/:id', checkAuthorization, function (req, res, next) {
     });
 });
 
-router.put('/edit-chore/:id', checkAuthorization, function (req, res, next) {
+router.put('/edit/:id', checkAuthorization, function (req, res, next) {
     let decodedToken = req.locals.decodedToken;
     let uid = decodedToken.uid;
     let editedChore = req.body
     let choreId = req.params.id
+    console.log('in route');
+    
 
     db('users_chores').where({ chore_id: choreId }).del().then(()=> {
         db('chores').where({ id: choreId }).update(editedChore).returning('*').then(updatedChore => {
