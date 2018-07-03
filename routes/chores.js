@@ -122,7 +122,8 @@ router.put('/edit', checkAuthorization, function (req, res, next) {
         db('chores').where({ id: choreId }).update(editedChore).returning('*').then(updatedChore => {
             updatedChore[0].cycle.forEach(user => {
                 console.log('cycle.forEach user', user);
-                
+                // !!!!!!!!! LEFT off here. Can probably set route back to param w/ id.
+                // Below is failing on user.id - it needs the id number.
                 db('users_chores').insert({user_id: user.id, chore_id: updatedChore[0].id}).then(() => {
                     console.log('posted to join');
                     res.json(updatedChore);
