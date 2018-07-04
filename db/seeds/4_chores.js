@@ -8,10 +8,10 @@ exports.seed = function (knex, Promise) {
                     id: 1,
                     title: 'Clean Kitchen Counters, Sink',
                     daysDue: JSON.stringify([0, 3]),
-                    currentDueDay: { date: '2018-05-09', index: 1 },
-                    cycle: JSON.stringify([ { uid: 'UTxHlglXk1VknBg7oTOE6leusU12', name: 'John' } ]),
-                    currentAssigned: { uid: 'UTxHlglXk1VknBg7oTOE6leusU12', name: 'John', index: 0 },
-                    upcoming: { index: 2, uid: 'UTxHlglXk1VknBg7oTOE6leusU12', name: 'John' },
+                    currentDueDay: { daysDueIndex: 1, date: '2018-05-09' },
+                    cycle: JSON.stringify([ { index: 0, uid: 'UTxHlglXk1VknBg7oTOE6leusU12', name: 'John' } ]),
+                    currentAssigned: { index: 0, uid: 'UTxHlglXk1VknBg7oTOE6leusU12', name: 'John' },
+                    upcoming: { index: 0, uid: 'UTxHlglXk1VknBg7oTOE6leusU12', name: 'John' },
                     done: false,
                     house_id: 1
                 },
@@ -19,13 +19,13 @@ exports.seed = function (knex, Promise) {
                     id: 2,
                     title: 'Dust and tidy',
                     daysDue: JSON.stringify([2, 6]),
-                    currentDueDay: { date: "2018-05-08", index: 0 },
+                    currentDueDay: { date: "2018-05-08", daysDueIndex: 0 },
                     cycle: JSON.stringify([ 
-                        { uid: 'zwZfygLIMugO3xKrhRloTJtHvQm2', name: 'Cassa' },
-                        { uid: '1FOSEK8IOYZsNDwsVCE6pkyMiPC3', name: 'Lindsey' },
-                        { uid: 'UTxHlglXk1VknBg7oTOE6leusU12', name: 'John' } 
+                        { index: 0, uid: 'zwZfygLIMugO3xKrhRloTJtHvQm2', name: 'Cassa' },
+                        { index: 1, uid: '1FOSEK8IOYZsNDwsVCE6pkyMiPC3', name: 'Lindsey' },
+                        { index: 2, uid: 'UTxHlglXk1VknBg7oTOE6leusU12', name: 'John' } 
                     ]),
-                    currentAssigned: { uid: '1FOSEK8IOYZsNDwsVCE6pkyMiPC3', name: 'Lindsey', index: 1 },
+                    currentAssigned: { index: 1, uid: '1FOSEK8IOYZsNDwsVCE6pkyMiPC3', name: 'Lindsey' },
                     upcoming: { index: 2, uid: 'UTxHlglXk1VknBg7oTOE6leusU12', name: 'John' },
                     done: false,
                     house_id: 1

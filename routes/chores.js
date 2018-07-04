@@ -26,8 +26,8 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
                     // If we're at the end of the array, jump back to the zero index. Otherwise, increase by one.
                     let nextDaysDueIndex = 0
 
-                    if (obj.daysDue.length > 1 && obj.daysDue[obj.currentDueDay.index + 1]) {
-                        nextDaysDueIndex = obj.currentDueDay.index + 1
+                    if (obj.daysDue.length > 1 && obj.daysDue[obj.currentDueDay.daysDueIndex + 1]) {
+                        nextDaysDueIndex = obj.currentDueDay.daysDueIndex + 1
                     }
                     console.log('Due day - one day: ', moment(obj.currentDueDay.date).utc().hour(0).subtract(1, 'days'));
                     
@@ -94,43 +94,29 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
                         }
 
                         obj.currentDueDay.date = nextDayDue.format("YYYY-MM-DD")
-                        obj.currentDueDay.index = nextDaysDueIndex
+                        obj.currentDueDay.daysDueIndex = nextDaysDueIndex
 
                         obj.done = false
 
-                        // CYCLE HOUSEMATES
-                        let nextCycle = 0
+                        // CYCLE HOUSEMATES & UPCOMING
+                        // If there are multiple people in the cycle, AND we're not at the end of the array...                    
+                        if (obj.cycle.length > 1) {
+                            // Cycle to next user in cycle, or back to start
+                            const nextUserInCycle = obj.cycle[obj.currentAssigned.index + 1];
+                            const upcomingUserInCycle = obj.cycle[nextUserInCycle.index + 1];
 
-                        // If there are multiple people in the cycle, and we're not at the end of the array, increase the upcoming index by one.
-                        if (obj.cycle.length > 1 && obj.cycle[obj.currentAssigned.index + 1]) {
-                            nextCycle = obj.currentAssigned.index + 1;
+                            obj.currentAssigned = nextUserInCycle || obj.cycle[0];
+                            obj.upcoming = upcomingUserInCycle || obj.cycle[0];
                         }
-
-                        obj.currentAssigned.index = nextCycle
-                        obj.currentAssigned.uid = obj.cycle[nextCycle].uid;
-                        obj.currentAssigned.name = users.find(user => (user.uid === obj.currentAssigned.uid)).name;
-
-                        // CYCLE UPCOMING
-                        let upcomingCycle = 0
-
-                        // Get the Index of the next due day
-                        if (obj.cycle.length > 1 && obj.cycle[obj.currentAssigned.index + 1]) {
-                            upcomingCycle = obj.currentAssigned.index + 1;
-                        }
-
-                        obj.upcoming.index = upcomingCycle
-                        obj.upcoming.uid = obj.cycle[upcomingCycle].uid
-                        obj.upcoming.name = users.find(user => (user.uid === obj.upcoming.uid)).name
                     }
                 }
 
                 // Once done is false
                 console.log('Current Due Day: ', obj.currentDueDay.date);
 
-                // Stringify daysDue, cycle, and upcoming for postgres
+                // Stringify Arrays: daysDue, cycle, for postgres
                 obj.daysDue = JSON.stringify(obj.daysDue)
                 obj.cycle = JSON.stringify(obj.cycle)
-                obj.upcoming = JSON.stringify(obj.upcoming)
 
                 db('chores').where({ id: obj.id }).update(obj).then((res) => {
                     console.log('end algorithm, post update', res);
