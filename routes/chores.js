@@ -7,7 +7,7 @@ const moment = require('moment');
 router.get('/chores', checkAuthorization, function (req, res, next) {
     const decodedToken = req.locals.decodedToken;
     const uid = decodedToken.uid;
-    
+
     let allChores = [];
 
     db('chores').where({ house_id: 1 }).then(result => {
@@ -23,6 +23,7 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
             
             // If a chore is marked as Done.
             if (obj.done) {
+                // !!! This is going to cause the index to change, but the date not to if the date isn't ready to switch yet
                 // If we're at the end of the array, jump back to the zero index. Otherwise, increase by one.
                 let nextDaysDueIndex = 0
 
@@ -47,18 +48,10 @@ router.get('/chores', checkAuthorization, function (req, res, next) {
                         const dayInDaysDueArray = moment().utc().day(day, 'day').format('YYYY-MM-DD') // This is the day of the current week of those daysDue values
                         console.log('dayInDaysDueArray: ', dayInDaysDueArray);
                         
-
-                        // If the day is After the current due date...
-                        if (moment(dayInDaysDueArray).isAfter(obj.currentDueDay.date, 'day')) {
-                            // ... And is the SAME OR is AFTER Today
-                            // !!!!!!! Check if we can get rid of isSame here...
-                            console.log('first if');
-                            
-                            if (moment(dayInDaysDueArray).isSame(moment().utc(), 'day') || moment(dayInDaysDueArray).isAfter(moment().utc(), 'day')) {
-                                console.log('returntrue');
-                                
-                                return true
-                            }
+                        // Is the day we're checking After both the currentDueDay AND today -- then return true
+                        if (moment(dayInDaysDueArray).isAfter(obj.currentDueDay.date, 'day') && moment(dayInDaysDueArray).isAfter(moment().utc(), 'day')) {
+                            console.log('In if: day checked is AFTER both the currentDueDay AND today');
+                            return true;
                         }
                     })
                     console.log('!!!!!!!!!!! Next available days: ', nextAvailableDays);
